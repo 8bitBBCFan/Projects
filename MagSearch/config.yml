@@ -1,0 +1,16 @@
+magazines:
+  magpi:
+    filename: MagPi
+    language: EN
+    directory: /home/pi/nas/HOBBY/Magazines/MagPi/
+    database: magpi.db
+  hackspace:
+    filename: HackSpace
+    language: EN
+    directory: /home/pi/nas/HOBBY/Magazines/HackSpace/
+    database: hackspace.db
+  elektor:
+    filename: Elektor
+    language: NL
+    directory: /home/pi/nas/HOBBY/Magazines/Elektor/
+    database: elektor.db
