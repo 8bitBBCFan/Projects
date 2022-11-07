@@ -1,3 +1,9 @@
+# List of magazines
+#   filename  : a magazine name starts with 'filename' followed by a number, eg. MagPi01, MagPi123
+#   language  : available EN (English), NL (Dutch)
+#   directory : the folder which contains the magazines
+#   database  : the name of the database
+
 magazines:
   magpi:
     filename: MagPi
@@ -14,3 +20,10 @@ magazines:
     language: NL
     directory: /home/pi/nas/HOBBY/Magazines/Elektor/
     database: elektor.db
+
+# Default mode of matching search terms to keys. Options are:
+#   --any   : any position of the search term in the key word
+#   --start : search term has to be at the start of the keyword
+#   --exact : exact match between search term and keyword
+
+match_mode: --any
