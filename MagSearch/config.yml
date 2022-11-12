@@ -1,4 +1,5 @@
 # List of magazines
+#   descr     : description of the magazine
 #   filename  : a magazine name starts with 'filename' followed by a number, eg. MagPi01, MagPi123
 #   language  : available EN (English), NL (Dutch)
 #   directory : the folder which contains the magazines
@@ -6,16 +7,31 @@
 
 magazines:
   magpi:
+    descr: MagPi magazine
     filename: MagPi
     language: EN
     directory: /home/pi/nas/HOBBY/Magazines/MagPi/
     database: magpi.db
   hackspace:
+    descr: HackSpace magazine
     filename: HackSpace
     language: EN
     directory: /home/pi/nas/HOBBY/Magazines/HackSpace/
     database: hackspace.db
+  helloworld:
+    descr: Hello World magazine
+    filename: HelloWorld
+    language: EN
+    directory: /home/pi/nas/HOBBY/Magazines/Others/
+    database: helloworld.db
+  wireframe:
+    descr: WireFrame magazine
+    filename: Wireframe
+    language: EN
+    directory: /home/pi/nas/HOBBY/Magazines/Others/
+    database: wireframe.db
   elektor:
+    descr: Elektor magazine
     filename: Elektor
     language: NL
     directory: /home/pi/nas/HOBBY/Magazines/Elektor/
@@ -27,3 +43,6 @@ magazines:
 #   --exact : exact match between search term and keyword
 
 match_mode: --any
+
+# GUI settings
+textbackgroundcolor: '#FFFFFF'
