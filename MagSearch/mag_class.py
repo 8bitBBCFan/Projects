@@ -14,7 +14,8 @@ class ScanMag:
             self.config = yaml.load(f, yaml.SafeLoader)
         self.magazines = list(self.config['magazines'].keys())
         self.print_enable = False
-        self.new_line = True        
+        self.print_gui = None # tuple (root, text widget)
+        self.new_line = True
 
     def init(self, mag_id):
         self.mag_db = {}   # database
@@ -27,6 +28,8 @@ class ScanMag:
         self.results = []
         self.match_mode = self.config['match_mode']
         self.save_db_enable = False
+        self.db_file_present = False
+        self.overwrite = False
         
         # sort file list according to numbers
         nrs = [self.fn_to_nr(f)[1] for f in self.files]
@@ -44,7 +47,7 @@ class ScanMag:
             self.stopwords += ['before', 'beforehand', 'behind', 'being', 'below']
             self.stopwords += ['beside', 'besides', 'between', 'beyond', 'bill', 'both']
             self.stopwords += ['bottom', 'but', 'by', 'call', 'called', 'can', 'cannot', 'cant']
-            self.stopwords += ['co', 'con', 'could', 'couldnt', 'cry', 'de']
+            self.stopwords += ['co', 'come', 'comes', 'con', 'could', 'couldnt', 'cry', 'de']
             self.stopwords += ['describe', 'detail', 'did', 'do', 'does', 'done', 'down', 'due']
             self.stopwords += ['during', 'each', 'eg', 'eight', 'either', 'eleven', 'else']
             self.stopwords += ['elsewhere', 'empty', 'enough', 'etc', 'even', 'ever']
@@ -52,13 +55,13 @@ class ScanMag:
             self.stopwords += ['few', 'fifteen', 'fifty', 'fill', 'find', 'fire', 'first']
             self.stopwords += ['five', 'fix', 'for', 'former', 'formerly', 'forty', 'found']
             self.stopwords += ['four', 'from', 'front', 'full', 'further', 'get', 'give']
-            self.stopwords += ['go', 'going', 'had', 'has', 'hasnt', 'have', 'he', 'hence', 'her']
+            self.stopwords += ['go', 'going', 'got', 'had', 'has', 'hasnt', 'have', 'he', 'hence', 'her']
             self.stopwords += ['here', 'hereafter', 'hereby', 'herein', 'hereupon', 'hers']
             self.stopwords += ['herself', 'him', 'himself', 'his', 'how', 'however']
             self.stopwords += ['hundred', 'i', 'ie', 'if', 'in', 'inc', 'indeed']
             self.stopwords += ['interest', 'into', 'is', 'it', 'its', 'itself', 'keep']
             self.stopwords += ['last', 'latter', 'latterly', 'least', 'less', 'let', 'lets', 'likes', 'ltd', 'made', 'magpi']
-            self.stopwords += ['many', 'may', 'me', 'means', 'meanwhile', 'might', 'mill', 'mine']
+            self.stopwords += ['make', 'makes', 'making', 'many', 'may', 'me', 'means', 'meanwhile', 'might', 'mill', 'mine']
             self.stopwords += ['more', 'moreover', 'most', 'mostly', 'move', 'much']
             self.stopwords += ['must', 'my', 'myself', 'name', 'namely', 'neither', 'never']
             self.stopwords += ['nevertheless', 'next', 'nine', 'no', 'nobody', 'none']
@@ -148,19 +151,17 @@ class ScanMag:
         for fn in self.files:
             if nr == self.fn_to_nr(fn)[1]: return(fn)
         return('')
-
+    
     def mag_nrs(self):
-        # determine the first and last magazine in the folder and database
-        self.folder_firstmag, self.folder_lastmag = 1000, 0
-        self.db_lastmag = 0
+        # determine which files are not in the database
+        self.folder_firstmag, self.folder_lastmag = 1000, -1000
+        files_db = self.mag_db.keys()
         for fn in self.files:
-            if fn.startswith(self.mag_id):
-                nr = self.fn_to_nr(fn)[1]
-                if nr > self.folder_lastmag: self.folder_lastmag = nr
-                if nr < self.folder_firstmag: self.folder_firstmag = nr
-        lst = list(self.mag_db.keys())
-        if len(lst) > 0:
-            self.db_lastmag = self.fn_to_nr(lst[-1])[1]
+            if fn.split('.')[0] not in files_db:
+                if fn.startswith(self.mag_id):
+                    nr = self.fn_to_nr(fn)[1]
+                    if nr > self.folder_lastmag: self.folder_lastmag = nr
+                    if nr < self.folder_firstmag: self.folder_firstmag = nr
 
     def pdf2text(self, file_input, page):
         # Converts the MagPi PDF file to a list of words
@@ -195,19 +196,30 @@ class ScanMag:
         wordfreq = [self.wordlst.count(p) for p in self.wordlst]
         self.freqtable = dict(list(zip(self.wordlst,wordfreq)))
 
-    def print(self, msg, color='white', end='\n'):
-        if self.print_enable:
-            prefix = '  ' if self.new_line else ''
-            # ANSI escape sequences
-            col = {'white':'\033[0m', 'red':'\u001b[31;1m', 'green':'\u001b[32;1m',\
-                   'yellow':'\u001b[33;1m', 'blue':'\u001b[34;1m'}
-            print('{3}{1}{0}{2}'.format(msg, col[color], col['white'], prefix), end=end)
-            self.new_line = False if end == '' else True
-        else:
-            print(msg, end=end)   # for testing purposes
+    def print(self, msg='', color='white', end='\n', clear=False):
+        if self.print_enable is not None:
+            if self.print_enable:
+                if self.print_gui is None:
+                    # text goes to the CLI (command line interpreter)
+                    prefix = '  ' if self.new_line else ''
+                    # ANSI escape sequences
+                    col = {'white':'\033[0m', 'red':'\u001b[31;1m', 'green':'\u001b[32;1m',\
+                           'yellow':'\u001b[33;1m', 'blue':'\u001b[34;1m'}
+                    print('{3}{1}{0}{2}'.format(msg, col[color], col['white'], prefix), end=end)
+                    self.new_line = False if end == '' else True
+                else:
+                    # text goes to the GUI
+                    if not clear:
+                        postfix = 'black' if color=='white' else color
+                        self.print_gui[1].insert('end', ' '+msg+end, postfix)
+                    else:
+                        self.print_gui[1].delete('1.0', 'end')
+                        self.print_gui[1].insert('end', '\n')
+                    self.print_gui[0].update_idletasks()
+            else:
+                print(msg, end=end)   # for testing purposes
 
     def add_magazine(self, mag_nr):
-        self.mag_nrs()
         mag = self.mag_id + str(mag_nr).zfill(2)
         
         filnam = ''
@@ -216,14 +228,17 @@ class ScanMag:
                 filnam = fn.split('.')[0]   # short filename without extension
                 break
         if filnam == '':
-            self.print('Magazine {} does not exist'.format(mag), 'red')
+            self.print('Magazine {} (does not exist - skipped)'.format(mag), 'red')
             return(False)
+        if (filnam in self.mag_db.keys()) and not self.overwrite: return(False)
         else:
             # determine maximum number of pages
+            t0 = time.time()
+            self.print('Processing magazine {} ...'.format(filnam))
             file = open(self.mag_folder + filnam + '.pdf', 'rb')
             readpdf = PyPDF2.PdfFileReader(file)
             maxpage = readpdf.numPages
-            self.print('Number of pages in {} : {}'.format(filnam, maxpage))
+            self.print('Number of pages : {}, indexing ...'.format(maxpage), end='')
 
             # scan all pages
             pages = [None]*(maxpage+1)
@@ -234,15 +249,20 @@ class ScanMag:
                 self.remove_stopwords()
                 self.freqdict()
                 pages[page] = self.freqtable
+            self.print(' ({:4.1f} secs)'.format(time.time() - t0))
             return(True)
 
     def load_db(self, db_file):
         if os.path.exists(db_file):
             with open(db_file, 'rb') as f:
                 self.mag_db = pickle.load(f)
+            self.db_file_present = True
+            return True
         else:
             self.mag_db = {}
-            self.print('An empty database has been created', 'red')
+            self.db_file_present = False
+            self.print('A database file is not yet present.', 'red')
+            return False
 
     def save_db(self, db_file):
         if self.save_db_enable:
