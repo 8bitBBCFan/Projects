@@ -8,9 +8,10 @@ def get_page(xpos, s):
         while s[xpos+i].isdigit(): i += dr
         return (xpos+i+1 if i!=0 and s[xpos+i]==' ' else -1)
 
-    i_left, i_right = __scan(-1), __scan(+1)
-    if i_left!=-1 and i_right!=-1:
-        return int(s[i_left:i_right])
+    if xpos<len(s) and s!='':
+        i_left, i_right = __scan(-1), __scan(+1)
+        if i_left!=-1 and i_right!=-1:
+            return int(s[i_left:i_right])
     return(-1)
 
-print(get_page(33, s))
+print(get_page(27, s))

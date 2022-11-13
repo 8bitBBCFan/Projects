@@ -266,14 +266,14 @@ class MyApp:
             self.kw.protocol("WM_DELETE_WINDOW", self.key_window_quit)
             self.kw.resizable(1,1)
 
-            bg = '#ededed'            
-            baseframe = tk.Frame(self.kw, bg=bg)
+            bg = '#ededed'
+            textbgcolor = se.config['textbackgroundcolor']
+            baseframe = tk.Frame(self.kw, bg=textbgcolor)
             baseframe.pack(fill=tk.BOTH, expand=tk.TRUE)
             
-            textbgcolor = se.config['textbackgroundcolor']
-            self.kw.txt = tk.Text(baseframe, bg=textbgcolor, height=8, width=60, wrap=tk.WORD, font=txtFont)
-            self.kw.txt.pack(padx=5, pady=5, side=tk.TOP)
-            self.kw.txt.tag_config('blue', foreground='blue', font=('Courier', 10, 'underline', 'bold'))
+            self.kw.txt = tk.Text(baseframe, bg=textbgcolor, highlightthickness=0, bd=0, height=9, width=60, wrap=tk.WORD, font=txtFont)
+            self.kw.txt.pack(padx=15, pady=15, side=tk.TOP)
+            self.kw.txt.tag_config('blue', foreground='blue', font=('Courier', 10, 'bold'))
             self.key_window_open = True
 
     def key_window_quit(self):
@@ -337,7 +337,7 @@ class MyApp:
         self.key_window()
         p = self.txt.index('current').split('.')
         line, xpos = int(p[0]), int(p[1])
-        
+                
         # get complete line of text
         s = self.txt.get(str(line)+'.0', str(line+1)+'.0')[:-1]
         colon = s.find(':')
@@ -353,6 +353,7 @@ class MyApp:
                 for r in results:
                     if r[1] > 1: s += '{}  '.format(r[0])
                 self.kw.txt.insert(tk.END, s + '\n')
+        self.txt.focus()
 
     def search(self, event):
         entry = self.keys.get().lower().strip()
