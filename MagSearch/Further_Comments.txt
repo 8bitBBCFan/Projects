@@ -1,0 +1,8 @@
+https://www.xpdfreader.com/download.html
+Download the Xpdf command line tools:
+Windows 32/64-bit (Win 7 and newer): download (GPG signature)
+zip-file xpdf-tools-win-4.04.zip
+XPdfReader installs in C:\Program Files (x86)\Glyph & Cog
+
+search function only allows all AND,, no combination of logicals
+

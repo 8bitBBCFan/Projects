@@ -1,21 +1,25 @@
 # Class for scanning the magazines Elektor, MagPi and HackSpace
 #    installed software PyYAML, PyPDF2
 #    pdftotext, based on Poppler
+#    subprocess module for Windows command 'pdftotext' from https://www.xpdfreader.com
+#    text processing based on 'https://programminghistorian.org/en/lessons/counting-frequencies'
 
 import os, re, pickle, time
 import PyPDF2
 from os import listdir
 from os.path import isfile, join
-import yaml
+import yaml, subprocess
 
 class ScanMag:
-    def __init__(self):
+    def __init__(self, os):
+        # os: Linux, Windows
         with open('config.yml') as f:
             self.config = yaml.load(f, yaml.SafeLoader)
         self.magazines = list(self.config['magazines'].keys())
         self.print_enable = False
         self.print_gui = None # tuple (root, text widget)
         self.new_line = True
+        self.os = os.lower()
 
     def init(self, mag_id):
         self.mag_db = {}   # database
@@ -168,10 +172,14 @@ class ScanMag:
         # Some codes are removed and C++ is replaced by cpp
         # file_input is the full filepath
 
-        file_output = './tmp.txt'
-
-        s = 'pdftotext -enc "UTF-8" -q -f '+str(page)+' -l '+str(page)+' "'+file_input+'" "'+file_output+'"'
-        os.system(s)
+        file_output = os.getcwd() + '/tmp.txt'
+        if self.os == 'linux':
+            s = 'pdftotext -enc "UTF-8" -q -f '+str(page)+' -l '+str(page)+' "'+file_input+'" "'+file_output+'"'
+            os.system(s)
+        else:
+            s = 'pdftotext.exe -enc "UTF-8" -q -f '+str(page)+' -l '+str(page)+' "'+file_input+'" "'+file_output+'"'
+            subprocess.call(s, creationflags=0x00000008) # .call waits until command is finished, .Popen continues immediately
+        
         with open(file_output, 'rb') as f:
             self.doc = f.read()
 
@@ -230,7 +238,10 @@ class ScanMag:
         if filnam == '':
             self.print('Magazine {} (does not exist - skipped)'.format(mag), 'red')
             return(False)
-        if (filnam in self.mag_db.keys()) and not self.overwrite: return(False)
+        
+        if (filnam in self.mag_db.keys()) and not self.overwrite:
+            return(False)
+        
         else:
             # determine maximum number of pages
             t0 = time.time()

@@ -10,31 +10,31 @@ magazines:
     descr: MagPi magazine
     filename: MagPi
     language: EN
-    directory: /home/pi/nas/HOBBY/Magazines/MagPi/
+    directory: D:/HOBBY/Magazines/MagPi/
     database: magpi.db
   hackspace:
     descr: HackSpace magazine
     filename: HackSpace
     language: EN
-    directory: /home/pi/nas/HOBBY/Magazines/HackSpace/
+    directory: D:/HOBBY/Magazines/HackSpace/
     database: hackspace.db
   helloworld:
     descr: Hello World magazine
     filename: HelloWorld
     language: EN
-    directory: /home/pi/nas/HOBBY/Magazines/Others/
+    directory: D:/HOBBY/Magazines/Others/
     database: helloworld.db
   wireframe:
     descr: WireFrame magazine
     filename: Wireframe
     language: EN
-    directory: /home/pi/nas/HOBBY/Magazines/Others/
+    directory: D:/HOBBY/Magazines/Others/
     database: wireframe.db
   elektor:
     descr: Elektor magazine
     filename: Elektor
     language: NL
-    directory: /home/pi/nas/HOBBY/Magazines/Elektor/
+    directory: D:/HOBBY/Magazines/Elektor/
     database: elektor.db
 
 # Default mode of matching search terms to keys. Options are:

@@ -21,6 +21,9 @@ from tkinter import font
 import pickle
 import keyboard
 
+# subprocess required for execution under windows
+import subprocess
+
 # Example messagebox
 # result = messagebox.askokcancel('Title', 'Message')
 
@@ -34,10 +37,10 @@ if os.name == 'nt': PLATFORM = 'Windows'
 if os.name == 'posix': PLATFORM = 'Linux'
 
 if PLATFORM == 'Windows':
-    nasPath =  'D:\\HOBBY'
+    nasPath =  'D:/HOBBY'
     buttonWidth = 6
-    winWidth    = 1100
-    winHeight   = 380
+    winWidth    = 750
+    winHeight   = 400
     guiFont     = ("Segoe UI", 9)
     txtFont     = ("Courier New", 10)
     statusFont  = ("Segoe UI", 9)
@@ -51,7 +54,7 @@ elif PLATFORM == 'Linux':
     winHeight   = 320
     statusFont  = ("PibotoLt", 10)
 
-se = ScanMag()
+se = ScanMag(PLATFORM)
 
 class DatabaseMaintenance:
     def __init__(self, parent):
@@ -121,13 +124,16 @@ class DatabaseMaintenance:
             if end_s == '': end_s = start_s
             start, end = int(start_s), int(end_s)
             if start <= end:
+                db_changed = False
                 for nr in range(start, end+1):
                     self.SetStatus('Adding #{} ...'.format(nr))
-                    se.add_magazine(nr)
+                    if se.add_magazine(nr):
+                        db_changed = True
                     if self.abort:
                         break
-                print('Saving to {}'.format(se.database))
-                se.save_db(se.database)
+                if db_changed:
+                    print('Saving to {}'.format(se.database))
+                    se.save_db(se.database)
                 self.SetStatus('Ready')
                 se.print('Ready')
             else:
@@ -154,7 +160,7 @@ class MyApp:
         
         # Set up title and size, position
         # root.geometry('%dx%d+%d+%d' % (width, height, x, y))
-        root.geometry('+%d+%d' % (x, y))
+        root.geometry('%dx%d+%d+%d' % (winWidth, winHeight, x, y))
         root.title(prognam+" "+version)
         root.resizable(0,0)         # Switch off resizing
         root.protocol("WM_DELETE_WINDOW", self.QuitWindow)
@@ -164,7 +170,7 @@ class MyApp:
         bg   = "#ededed"   # background menu and status bar #ededed
         bg2  = "#fcfcfc"   # background pulldown menu
         bg3  = '#87919b'   # color of highlighted window title or menu item
-        gui_fnt = ("PibotoLt", 12)
+        gui_fnt = guiFont
         
         style = ttk.Style()
         style.theme_use("clam")
@@ -211,7 +217,7 @@ class MyApp:
         self.baseframe.pack(fill=tk.BOTH, expand=tk.TRUE)
         
         # Statusbar: set text with self.statusbar["text"]
-        self.statusbar = ttk.Label(root, text="Ready", anchor=tk.W)
+        self.statusbar = ttk.Label(root, text="Ready", anchor=tk.W, font=statusFont)
         self.statusbar.pack(side=tk.BOTTOM, fill=tk.X)
         
         # Widget definitions
@@ -273,7 +279,7 @@ class MyApp:
             textbgcolor = se.config['textbackgroundcolor']
             self.kw.txt = tk.Text(baseframe, bg=textbgcolor, height=8, width=60, wrap=tk.WORD, font=txtFont)
             self.kw.txt.pack(padx=5, pady=5, side=tk.TOP)
-            self.kw.txt.tag_config('blue', foreground='blue', font=('Courier', 10, 'underline', 'bold'))
+            self.kw.txt.tag_config('blue', foreground='blue', font=('Courier', 10, 'bold'))
             self.key_window_open = True
 
     def key_window_quit(self):
@@ -330,8 +336,13 @@ class MyApp:
             fl = se.mag_folder + magazine + '.pdf'
             page = self.get_page(xpos, s) if xpos > colon else 1
             if page != -1:
-                s = 'evince -i ' + str(page) + ' "'+ fl +'" 2>/dev/null &'
-                os.system(s)
+                if PLATFORM == 'Linux':
+                    s = 'evince -i ' + str(page) + ' "'+ fl +'" 2>/dev/null &'
+                    os.system(s)
+                else:
+                    s = 'C:/Program Files (x86)/Adobe/Acrobat Reader DC/Reader/AcroRd32 '
+                    s += '/A "page=' + str(page) + '"' + ' "' + fl + '"'
+                    subprocess.Popen(s, creationflags=0x00000008)
     
     def right_mouseclick(self, event):
         self.key_window()
@@ -351,7 +362,7 @@ class MyApp:
                 results = sorted(dct.items(), key=lambda item: item[1], reverse=True)
                 s = ''                
                 for r in results:
-                    if r[1] > 1: s += '{}  '.format(r[0])
+                    if r[1] > 0: s += '{}  '.format(r[0])
                 self.kw.txt.insert(tk.END, s + '\n')
 
     def search(self, event):
