@@ -1,0 +1,6 @@
+Dear MagPi magazine,
+
+first of all, thank you for your excellent magazine which I always read with great pleasure. Since I have often trouble in finding old articles, I have written a GUI program in Python which allows me to make a database of keywords for a series of magazines (e.g. MagPi, HackSpace, ...) and reporting the magazine and page numbers where a certain combination of keywords appears. By means of a click the magazine can immediately be opened at the right page. The screenshot gives an idea of the interface. Since I can imagine that this application can also be of help to other readers of your magazine, it might be useful to have a short article about this application (how it works, how to use it). In case you are interested, please contact me and I will be happy to write something and share the software.
+
+With kind regards,
+Hans van Zon, the Netherlands

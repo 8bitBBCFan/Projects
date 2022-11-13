@@ -1,0 +1,20 @@
+There is no indication how far apart the keywords are. Therefore there is no garantuee that they are related. This is caused by the frequency table which redistributes the keywords.
+
+MagSearch can not find that there is a search function for the MagPi magazine published. Only mention of an index in MagPi51, p93 and MagPi55, p93. Already in MagPi12,p40 it was mentioned to have something in the future. Always in the future ..
+
+Sometimes it is difficult to find the right keywords.
+
+Magazines: MagPi, HackSpace, HelloWorld, Wireframe
+
+Use
+The search entry can be used to select specific magazines and pages. Start with #.
+
+The program has to be run as sudo because the keyboard module requires this. The keyboard module is used to interrupt
+long database builds. If not run as sudo, interrupts are not possible.
+
+Convention filename: a descriptor can be added using an underscore, Filename and descriptor without underscores
+Scroll with mouse wheel to get through the text window
+
+TO DO
+V Open a certain magazine on a certain page. Special command in search function
+V Dropdown menu of magazines should reflect the yaml file, make it automatic
