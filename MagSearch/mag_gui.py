@@ -25,8 +25,8 @@ import keyboard
 # result = messagebox.askokcancel('Title', 'Message')
 
 # Program name and version
-PROGNAM = "MagSearch (search through a magazine)"
-VERSION = 'v0.8'
+PROGNAM = "MagSearch"
+VERSION = 'v0.9.0'
 
 # Platform
 PLATFORM = None
@@ -200,6 +200,7 @@ class MyApp:
 
         # Set up Help menu
         helpmenu = tk.Menu(menubar, tearoff=0, font=gui_fnt, fg=fg, bg=bg2, activeborderwidth=0, activebackground=bg3, activeforeground='white')
+        helpmenu.add_command(label="About", command=self.help_about)
         menubar.add_cascade(label="Help", menu=helpmenu)
                 
         # Show menubar
@@ -251,12 +252,40 @@ class MyApp:
         # Set up bindings
         root.bind_all("<Control-q>", self.QuitEvent)
         self.keys.bind('<Return>', self.search)
-        self.txt.bind("<Button-1>", self.left_mouseclick)
-        self.txt.bind("<Button-3>", self.right_mouseclick)
+        self.txt.bind("<Button-1>", self.mouseclick)
+        self.txt.bind("<Button-3>", self.mouseclick)
         
         self.db_main = None
         self.new_mag()
         self.key_window_open = False
+        
+    def help_about(self):
+        ha = tk.Toplevel(root)
+        bg = '#ededed'
+        
+        ha.title('About ' + PROGNAM)
+        ha.geometry('%dx%d+%d+%d' % (400, 340, myapp.root.winfo_x()+250, myapp.root.winfo_y()+60))
+        ha.protocol("WM_DELETE_WINDOW", self.help_about_quit)
+        ha.resizable(0,0)
+        self.ha = ha
+
+        fr = tk.Frame(self.ha, bg=bg)
+        fr.pack(fill=tk.BOTH, expand=tk.TRUE)
+        fr.picture = tk.PhotoImage(file='about_image.png')
+        lb1 = tk.Label(fr, image=fr.picture, bg=bg)
+        lb2 = tk.Label(fr, text=PROGNAM, font=guiFont + ('bold',), bg=bg)
+        lb3 = tk.Label(fr, text=VERSION[1:], font=guiFont, bg=bg)
+        lb4 = tk.Label(fr, text='Search for keywords in a magazine', font=guiFont, bg=bg)
+        lb5 = tk.Label(fr, text='Hans van Zon, 2022', font=guiFont, bg=bg)
+        
+        lb1.place(relx=0.5, rely=0.24, anchor=tk.CENTER)
+        lb2.place(relx=0.5, rely=0.58, anchor=tk.CENTER)
+        lb3.place(relx=0.5, rely=0.68, anchor=tk.CENTER)
+        lb4.place(relx=0.5, rely=0.78, anchor=tk.CENTER)
+        lb5.place(relx=0.5, rely=0.88, anchor=tk.CENTER)
+        
+    def help_about_quit(self):
+        self.ha.destroy()
 
     def key_window(self):
         if not self.key_window_open:
@@ -308,52 +337,40 @@ class MyApp:
 
     def get_page(self, xpos, s):
         def __scan(dr):
-            i = 0
+            i = 0 if dr==1 else -1
             while s[xpos+i].isdigit(): i += dr
-            return (xpos+i+1 if i!=0 and s[xpos+i]==' ' else -1)
+            return(-1 if s[xpos+i] != ' ' else xpos+i)
 
         if xpos<len(s) and s!='':
             i_left, i_right = __scan(-1), __scan(+1)
-            if i_left!=-1 and i_right!=-1:
-                return int(s[i_left:i_right])
+            if i_left!=-1 and i_right!=-1 and i_left!=i_right:
+                return int(s[i_left+1:i_right])
         return(-1)
-
-    def left_mouseclick(self, event):        
-        p = self.txt.index('current').split('.')
-        line, xpos = int(p[0]), int(p[1])
-        
-        # get complete line of text
-        s = self.txt.get(str(line)+'.0', str(line+1)+'.0')[:-1]
-        colon = s.find(':')
-        if s != '':
-            magazine = s.split(':')[0].strip()
-            fl = se.mag_folder + magazine + '.pdf'
-            page = self.get_page(xpos, s) if xpos > colon else 1
-            if page != -1:
-                s = 'evince -i ' + str(page) + ' "'+ fl +'" 2>/dev/null &'
-                os.system(s)
     
-    def right_mouseclick(self, event):
-        self.key_window()
+    def mouseclick(self, event):
         p = self.txt.index('current').split('.')
         line, xpos = int(p[0]), int(p[1])
-                
-        # get complete line of text
         s = self.txt.get(str(line)+'.0', str(line+1)+'.0')[:-1]
         colon = s.find(':')
         if s != '':
             magazine = s.split(':')[0].strip()
             page = self.get_page(xpos, s) if xpos > colon else 1
             if page != -1:
-                self.kw.txt.delete('1.0', tk.END)
-                self.kw.txt.insert(tk.END, '{} - page {}\n\n'.format(magazine, page), 'blue')
-                dct = se.mag_db[magazine][int(page)]
-                results = sorted(dct.items(), key=lambda item: item[1], reverse=True)
-                s = ''                
-                for r in results:
-                    if r[1] > 1: s += '{}  '.format(r[0])
-                self.kw.txt.insert(tk.END, s + '\n')
-        self.txt.focus()
+                if event.num==1: # left mouseclick, open PDF
+                    fl = se.mag_folder + magazine + '.pdf'
+                    s = 'evince -i ' + str(page) + ' "'+ fl +'" 2>/dev/null &'
+                    os.system(s)
+                    
+                if event.num==3: # right mouseclick, display keywords
+                    self.key_window()
+                    self.kw.txt.delete('1.0', tk.END)
+                    self.kw.txt.insert(tk.END, '{} - page {}\n\n'.format(magazine, page), 'blue')
+                    dct = se.mag_db[magazine][int(page)]
+                    results = sorted(dct.items(), key=lambda item: item[1], reverse=True)
+                    s = ''                
+                    for r in results:
+                        if r[1] > 1: s += '{}  '.format(r[0])
+                    self.kw.txt.insert(tk.END, s + '\n')
 
     def search(self, event):
         entry = self.keys.get().lower().strip()
@@ -367,7 +384,8 @@ class MyApp:
                 os.system(s)
 
         else:
-            keys = entry.split()
+            # split string in keywords and replace c++ by cpp
+            keys = [s.replace('c++', 'cpp') for s in entry.split()]
             se.search(keys)
             
             d = {}
