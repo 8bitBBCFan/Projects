@@ -15,6 +15,8 @@ long database builds. If not run as sudo, interrupts are not possible.
 Convention filename: a descriptor can be added using an underscore, Filename and descriptor without underscores
 Scroll with mouse wheel to get through the text window
 
+Special case for C++ which is replaced by cpp
+
 TO DO
 V Open a certain magazine on a certain page. Special command in search function
 V Dropdown menu of magazines should reflect the yaml file, make it automatic
