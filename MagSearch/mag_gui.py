@@ -126,7 +126,6 @@ class DatabaseMaintenance:
                     se.add_magazine(nr)
                     if self.abort:
                         break
-                print('Saving to {}'.format(se.database))
                 se.save_db(se.database)
                 self.SetStatus('Ready')
                 se.print('Ready')
@@ -231,6 +230,7 @@ class MyApp:
         
         # radiobuttons for match
         self.match_nr = tk.IntVar()
+        self.match_nr.set(['--any', '--start', '--exact'].index(se.config['match_mode']))
         rb1 = tk.Radiobutton(self.src, text='Any', variable=self.match_nr, value=0, bg=bg, highlightthickness=0, command=self.match)
         rb2 = tk.Radiobutton(self.src, text='Start', variable=self.match_nr, bg=bg, value=1, highlightthickness=0, command=self.match)
         rb3 = tk.Radiobutton(self.src, text='Exact', variable=self.match_nr, bg=bg, value=2, highlightthickness=0, command=self.match)
