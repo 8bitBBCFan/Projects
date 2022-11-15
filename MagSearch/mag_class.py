@@ -12,6 +12,8 @@ class ScanMag:
     def __init__(self):
         with open('config.yml') as f:
             self.config = yaml.load(f, yaml.SafeLoader)
+        with open('parser.yml') as f:
+            self.parser = yaml.load(f, yaml.SafeLoader)
         self.magazines = list(self.config['magazines'].keys())
         self.print_enable = False
         self.print_gui = None # tuple (root, text widget)
@@ -24,7 +26,9 @@ class ScanMag:
         self.mag_folder = self.config['magazines'][mag_id]['directory']
         self.database = self.config['magazines'][mag_id]['database']
         self.files = [f for f in listdir(self.mag_folder) if isfile(join(self.mag_folder, f)) and f.startswith(self.mag_id)]
-        self.define_stopwords()
+        self.stopwords = [w.strip() for w in self.parser['stopwords'][self.language].split(',')]
+        self.except_words = [w.strip() for w in self.parser['except_2char'].split(',')]
+        self.except_words += [w.strip() for w in self.parser['except_3char'].split(',')]
         self.results = []
         self.match_mode = self.config['match_mode']
         self.save_db_enable = False
@@ -34,106 +38,6 @@ class ScanMag:
         # sort file list according to numbers
         nrs = [self.fn_to_nr(f)[1] for f in self.files]
         self.files = [x for _,x in sorted(zip(nrs, self.files), key=lambda pair: pair[0])]
-
-    def define_stopwords(self):
-        if self.language == 'EN':
-            self.stopwords = ['a', 'about', 'above', 'across', 'after', 'afterwards']
-            self.stopwords += ['again', 'against', 'all', 'almost', 'alone', 'along']
-            self.stopwords += ['already', 'also', 'although', 'always', 'am', 'among']
-            self.stopwords += ['amongst', 'amoungst', 'amount', 'an', 'and', 'another']
-            self.stopwords += ['any', 'anyhow', 'anyone', 'anything', 'anyway', 'anywhere']
-            self.stopwords += ['are', 'around', 'as', 'at', 'back', 'be', 'became']
-            self.stopwords += ['because', 'become', 'becomes', 'becoming', 'been']
-            self.stopwords += ['before', 'beforehand', 'behind', 'being', 'below']
-            self.stopwords += ['beside', 'besides', 'between', 'beyond', 'bill', 'both']
-            self.stopwords += ['bottom', 'but', 'by', 'call', 'called', 'can', 'cannot', 'cant']
-            self.stopwords += ['co', 'come', 'comes', 'con', 'could', 'couldnt', 'cry', 'de']
-            self.stopwords += ['describe', 'detail', 'did', 'do', 'does', 'done', 'down', 'due']
-            self.stopwords += ['during', 'each', 'eg', 'eight', 'either', 'eleven', 'else']
-            self.stopwords += ['elsewhere', 'empty', 'enough', 'etc', 'even', 'ever']
-            self.stopwords += ['every', 'everyone', 'everything', 'everywhere', 'except']
-            self.stopwords += ['few', 'fifteen', 'fifty', 'fill', 'find', 'fire', 'first']
-            self.stopwords += ['five', 'fix', 'for', 'former', 'formerly', 'forty', 'found']
-            self.stopwords += ['four', 'from', 'front', 'full', 'further', 'get', 'give']
-            self.stopwords += ['go', 'going', 'got', 'had', 'has', 'hasnt', 'have', 'he', 'hence', 'her']
-            self.stopwords += ['here', 'hereafter', 'hereby', 'herein', 'hereupon', 'hers']
-            self.stopwords += ['herself', 'him', 'himself', 'his', 'how', 'however']
-            self.stopwords += ['hundred', 'i', 'ie', 'if', 'in', 'inc', 'indeed']
-            self.stopwords += ['interest', 'into', 'is', 'it', 'its', 'itself', 'keep']
-            self.stopwords += ['last', 'latter', 'latterly', 'least', 'less', 'let', 'lets', 'likes', 'ltd', 'made', 'magpi']
-            self.stopwords += ['make', 'makes', 'making', 'many', 'may', 'me', 'means', 'meanwhile', 'might', 'mill', 'mine']
-            self.stopwords += ['more', 'moreover', 'most', 'mostly', 'move', 'much']
-            self.stopwords += ['must', 'my', 'myself', 'name', 'namely', 'neither', 'never']
-            self.stopwords += ['nevertheless', 'next', 'nine', 'no', 'nobody', 'none']
-            self.stopwords += ['noone', 'nor', 'not', 'nothing', 'now', 'nowhere', 'of']
-            self.stopwords += ['off', 'often', 'on','once', 'one', 'only', 'onto', 'or']
-            self.stopwords += ['other', 'others', 'otherwise', 'our', 'ours', 'ourselves']
-            self.stopwords += ['out', 'over', 'own', 'part', 'per', 'perhaps', 'please']
-            self.stopwords += ['put', 'rather', 're', 's', 'same', 'see', 'seem', 'seemed']
-            self.stopwords += ['seeming', 'seems', 'serious', 'several', 'she', 'should']
-            self.stopwords += ['show', 'side', 'since', 'sincere', 'six', 'sixty', 'so']
-            self.stopwords += ['some', 'somehow', 'someone', 'something', 'sometime']
-            self.stopwords += ['sometimes', 'somewhere', 'still', 'such', 'system', 'take']
-            self.stopwords += ['ten', 'than', 'that', 'the', 'their', 'them', 'themselves']
-            self.stopwords += ['then', 'thence', 'there', 'thereafter', 'thereby']
-            self.stopwords += ['therefore', 'therein', 'thereupon', 'these', 'they']
-            self.stopwords += ['thick', 'thin', 'third', 'this', 'those', 'though', 'three']
-            self.stopwords += ['three', 'through', 'throughout', 'thru', 'thus', 'to']
-            self.stopwords += ['together', 'too', 'top', 'toward', 'towards', 'twelve']
-            self.stopwords += ['twenty', 'two', 'un', 'under', 'until', 'up', 'upon']
-            self.stopwords += ['us', 'very', 'via', 'want', 'was', 'we', 'well', 'were', 'what']
-            self.stopwords += ['whatever', 'when', 'whence', 'whenever', 'where']
-            self.stopwords += ['whereafter', 'whereas', 'whereby', 'wherein', 'whereupon']
-            self.stopwords += ['wherever', 'whether', 'which', 'while', 'whither', 'who']
-            self.stopwords += ['whoever', 'whole', 'whom', 'whose', 'why', 'will', 'with']
-            self.stopwords += ['within', 'without', 'would', 'yet', 'you', 'your']
-            self.stopwords += ['yours', 'yourself', 'yourselves']
-            self.stopwords += ['possible', 'http', 'uk', 'it’s', 'goes', 'like', 'don’t', 'just', 'that’s', 'he’s', 'let’s']
-            self.stopwords += ['need', 'using', 'i’m', 'she’s', 'we’ll', 'there’s', 'you’ll', 'use', 'uses', 'used', 'we’ve', 'we’re', 'says']
-
-        if self.language == 'NL':
-            self.stopwords = ['aan', 'acht', 'achter', 'achteren', 'afhankelijk', 'alle', 'alleen', 'allemaal', \
-                 'alles', 'als', 'alsnog', 'altijd', 'andere', 'anders', 'beetje', 'behalve', 'behoorlijk', \
-                 'behulp', 'beide', 'believen', 'best', 'bestaan', 'bestaat', 'betekent', 'beter', 'betreft', \
-                 'bevat', 'bevinden', 'bieden', 'biedt', 'bij', 'bijna', 'bijvoorbeeld', 'binnen', 'blijft', \
-                 'blijkbaar', 'blijven', 'bouwt', 'boven', 'bovenaan', 'buiten', 'circa', 'daar', 'daarbij', 'daarentegen', \
-                 'daarmee', 'daarna', 'daarom', 'daarop', 'daartoe', 'daarvan', 'daarvoor', 'dan', 'dankzij', \
-                 'danwel', 'dat', 'de', 'denkt', 'derde', 'dergelijk', 'dergelijke', 'desondanks', 'deze', 'dezelfde', \
-                 'die', 'dik', 'dikkere', 'direct', 'direkt', 'dit', 'doen', 'doet', 'door', 'doorgaans', \
-                 'draaien', 'draait', 'drie', 'dringend', 'dus', 'echt', 'echter', 'een', 'eens', 'eenvoudig', \
-                 'eerder', 'eerst', 'eerste', 'eigen', 'eigenlijk', 'elk', 'elkaar', 'elke', 'enige', 'enkele', 'eraan', \
-                 'erg', 'erin', 'ermee', 'eruit', 'ervoor', 'evenals', 'extra', 'figuur', 'gaan', 'gaat', \
-                 'gaf', 'gebeurd', 'gebeurde', 'gebeuren', 'gebeurt', 'gebruik', 'gebruiken', 'gebruikt', \
-                 'gedraaid', 'geeft', 'geen', 'gegeven', 'gehad', 'geheel', 'geholpen', 'gehouden', 'gelegen', \
-                 'gemaakt', 'gemeten', 'genoeg', 'genomen', 'geschikt', 'geschreven', 'geval', 'geven', 'gewoon', \
-                 'goed', 'goede', 'gratis', 'groot', 'grote', 'grotere', 'haalt', 'had', 'heb', 'hebben', \
-                 'hebt', 'heeft', 'heel', 'helaas', 'hele', 'helpen', 'helpt', 'hen', 'het', 'hetzelfde', \
-                 'hier', 'hierin', 'hiermee', 'hiervan', 'hiervoor', 'hij', 'hoe', 'hoewel', 'hoge', 'hoog', \
-                 'hou', 'houd', 'houden', 'houdt', 'hun', 'ieder', 'iedere', 'iets', 'indien', 'is', 'juist', \
-                 'juiste', 'kan', 'kant', 'kijken', 'kijker', 'klaar', 'klein', 'kleine', 'komen', 'komt', \
-                 'kort', 'korte', 'krijgen', 'kun', 'kunnen', 'kunt', 'laag', 'laat', 'lang', 'langer', 'laten', \
-                 'later', 'liefst', 'liggen', 'ligt', 'lijken', 'lijkt', 'links', 'maak', 'maakt', 'maar', \
-                 'mag', 'maken', 'makkelijk', 'manier', 'mee', 'meer', 'meest', 'meestal', 'meeste', 'meet', \
-                 'men', 'met', 'meteen', 'meten', 'midden', 'mij', 'mijn', 'min', 'minder', 'minst', 'minstens', \
-                 'misschien', 'moest', 'moet', 'moeten', 'mogelijk', 'mogen', 'na', 'naar', 'naarmate', 'naast', \
-                 'nadat', 'nagenoeg', 'natuurlijk', 'nauwelijks', 'nee', 'neemt', 'negen', 'nemen', 'nergens', \
-                 'niet', 'nodig', 'nog', 'nogmaals', 'nooit', 'nou', 'nu', 'ofwel', 'omdat', 'omvat', 'onder', \
-                 'onderaan', 'ongeveer', 'ons', 'onze', 'ooit', 'ook', 'opeenvolgende', 'opnieuw', 'over', 'overigens', \
-                 'paar', 'pas', 'per', 'plus', 'prettig', 'qua', 'recent', 'recente', 'rechts', 'rond', 'schikt', \
-                 'schreef', 'schrijven', 'sla', 'slaan', 'slaat', 'slecht', 'slechts', 'snelle', 'soepel', 'sommige', \
-                 'soms', 'soort', 'staan', 'start', 'steeds', 'stevig', 'stop', 'stuk', 'tegen', 'telkens', \
-                 'ten', 'tenslotte', 'ter', 'terug', 'terwijl', 'tevens', 'tien', 'toch', 'toe', 'toen', \
-                 'tonen', 'toonde', 'toont', 'tot', 'tussen', 'twee', 'tweede', 'uit', 'uiteraard', 'uitgebreid', \
-                 'uitvoeren', 'vaak', 'van', 'vanaf', 'vanuit', 'vast', 'vasthouden', 'vastzetten', 'veel', 'verder', \
-                 'verdere', 'verscheidene', 'vervolgens', 'via', 'vier', 'vijf', 'vind', 'vinden', 'vindt', \
-                 'vlot', 'vlotte', 'voeren', 'volgende', 'volgens', 'volledig', 'voor', 'vooraf', 'vooral', \
-                 'voordat', 'vrij', 'vrijwel', 'vroeger', 'waar', 'waarbij', 'waardoor', 'waarmee', 'waarna', \
-                 'waarom', 'waaronder', 'waarop', 'waarschijnlijk', 'waaruit', 'waarvan', 'wanneer', 'want', \
-                 'was', 'wat', 'weer', 'weg', 'wegens', 'weinig', 'wel', 'weliswaar', 'welk', 'welke', 'wellicht', \
-                 'werd', 'werkelijk', 'werken', 'werkt', 'wie', 'wil', 'willen', 'wilt', 'worden', 'wordt', \
-                 'www', 'zal', 'zeer', 'zeker', 'zelden', 'zelf', 'zelfs', 'zes', 'zeven', 'zich', 'zie', \
-                 'zien', 'ziet', 'zijn', 'zit', 'zitten', 'zoals', 'zodat', 'zodoende', 'zodra', 'zogenaamd', \
-                 'zogenaamde', 'zolang', 'zonder', 'zou', 'zouden', 'zoveel', 'zowel', 'zozeer', 'zulke', 'zullen']
 
     def fn_to_nr(self, fn):
         # retrieve integer number and descriptor from filename
@@ -180,12 +84,10 @@ class ScanMag:
         self.wordlst = self.doc.decode().split()
         
     def remove_small_words(self, nchar=2):
-        except_words = ['3d', 'a6', 'a8', 'ai', 'ir', 'os', 'pi', 'sd', 'tk', 'qt', 'hz']
-        except_words += ['arm', 'bbc', 'cpp', 'cpu', 'gps', 'gtk', 'gui', 'i2c', 'led', 'ssh']
         tmp = []
         for i in range(len(self.wordlst)):
             word = self.wordlst[i].lower()
-            if (len(word) > nchar) or (word in except_words):
+            if (len(word) > nchar) or (word in self.except_words):
                 tmp.append(word)
         self.wordlst = tmp
 
