@@ -1,10 +1,54 @@
-import yaml
 
-with open('stopwords.yml') as f:
-    stopwords = yaml.load(f, yaml.SafeLoader)
-d = stopwords['stopwords']['NL']
-l = d.split(',')
-r = [e.strip() for e in l]
+# def best_article(lst, max_spacing=2):
+#     # best article is the article with the largest series of sequential pages
+#     finished, best, len_best, i = False, [], -1, 0
+#     while not finished:
+#         istart = i
+#         while True:
+#             last = lst[i]
+#             i += 1
+#             if i >= len(lst):
+#                 finished = True
+#                 break
+#             if lst[i]-last > max_spacing: break
+#         len_series = i-istart
+#         if len_series > len_best:
+#             len_best = len_series
+#             best = (len_series, istart, i, lst[istart:i])
+#     return(best)
+# 
+# # check for possible article
+# lst = [1,2,4,10,12,13,18,20,21,22,23,40,43,44,45]
+# r = best_article(lst)
+# print(r)
+
+import sys, os, os.path, re
+from mag_class import ScanMag
+
+se = ScanMag()
+se.init('magpi')
+
+file_input = '/home/pi/nas/HOBBY/Magazines/MagPi/MagPi65.pdf'
+file_output = './tmp.txt'
+page = 54
+s = 'pdftotext -enc "UTF-8" -q -f '+str(page)+' -l '+str(page)+' "'+file_input+'" "'+file_output+'"'
+os.system(s)
+
+with open(file_output, 'rb') as f:
+    doc = f.read()
+doc = re.sub(b'(c|C)\+\+', b'cpp', doc)
+doc = re.sub(b'[\x00-\x2f,\x3a-\x3f,\x5b-\x60,\x7b-\xff]', b' ', doc)
+se.wordlst = doc.decode().split()
+se.remove_small_words()
+se.remove_stopwords()
+
+# import yaml
+# 
+# with open('stopwords.yml') as f:
+#     stopwords = yaml.load(f, yaml.SafeLoader)
+# d = stopwords['stopwords']['NL']
+# l = d.split(',')
+# r = [e.strip() for e in l]
 
 # stopwords = ['aan', 'acht', 'achter', 'achteren', 'afhankelijk', 'alle', 'alleen', 'allemaal', \
 #  'alles', 'als', 'alsnog', 'altijd', 'andere', 'anders', 'beetje', 'behalve', 'behoorlijk', \
@@ -60,3 +104,73 @@ r = [e.strip() for e in l]
 #         s = '    '
 # f.write(s[:-2]+'\n')
 # f.close()
+
+# def best_article(lst, max_spacing=2):
+#     # best article is the article with the largest series of sequential pages
+#     finished, best, len_best, i = False, [], -1, 0
+#     while not finished:
+#         istart = i
+#         while True:
+#             last = lst[i]
+#             i += 1
+#             if i >= len(lst):
+#                 finished = True
+#                 break
+#             if lst[i]-last > max_spacing: break
+#         len_series = i-istart
+#         if len_series > len_best:
+#             len_best = len_series
+#             best = (len_series, istart, i, lst[istart:i])
+#     return(best)
+# 
+# # check for possible article
+# lst = [1,2,4,10,12,13,18,20,21,22,23,40,43,44,45]
+# len, start, stop, series = best_article(lst)
+
+# max_spacing = 3
+# finished = False
+# best, len_best = [], -1
+# 
+# i = 0
+# while not finished:
+#     istart = i
+#     while True:
+#         last = lst[i]
+#         i += 1
+#         if i >= len(lst):
+#             finished = True
+#             break
+#         if lst[i]-last > max_spacing: break
+#     len_series = i-istart
+#     if len_series > len_best:
+#         len_best = len_series
+#         best = (len_series, istart, i, lst[istart:i])
+
+# exit = False 
+# istart = 0
+# ln_max = -1
+# data = []
+# 
+# while True:
+#     last = lst[istart]    
+#     i = istart+1
+#     if i >= len(lst):
+#         exit = True
+#         break
+#     while (lst[i]-last) <= max_spacing:
+#         last = lst[i]
+#         i += 1
+#         if i >= len(lst):
+#             exit = True
+#             break
+#     iend = i-1
+#     ln = iend-istart+1
+#     if ln > ln_max:
+#         ln_max = ln
+#         data = lst[istart:iend+1]
+#     print(istart, iend, ln)
+#     istart = i
+#     if exit:
+#         break
+# 
+# print(data)

@@ -26,7 +26,7 @@ import keyboard
 
 # Program name and version
 PROGNAM = "MagSearch"
-VERSION = 'v0.9.0'
+VERSION = 'v0.9.2'
 
 # Platform
 PLATFORM = None
@@ -52,6 +52,24 @@ elif PLATFORM == 'Linux':
     statusFont  = ("PibotoLt", 10)
 
 se = ScanMag()
+
+def best_article(lst, max_spacing=2):
+    # best article is the article with the largest series of sequential pages
+    finished, best, len_best, i = False, [], -1, 0
+    while not finished:
+        istart = i
+        while True:
+            last = lst[i]
+            i += 1
+            if i >= len(lst):
+                finished = True
+                break
+            if lst[i]-last > max_spacing: break
+        len_series = i-istart
+        if len_series > len_best:
+            len_best = len_series
+            best = (len_series, istart, i, lst[istart:i])
+    return(best)
 
 class DatabaseMaintenance:
     def __init__(self, parent):
@@ -216,11 +234,16 @@ class MyApp:
         
         # Widget definitions
         textbgcolor = se.config['textbackgroundcolor']
-        xscrollbar = tk.Scrollbar(self.baseframe, orient=tk.HORIZONTAL, bg=bg)        
-        self.txt = tk.Text(self.baseframe, bg=textbgcolor, height=15, width=100, wrap='none', font=txtFont, xscrollcommand=xscrollbar.set)   # PibotoLt
-        xscrollbar.config(command=self.txt.xview)
+        topframe = tk.Frame(self.baseframe, bg=bg) # for text and scrollbars
+        topframe.pack(side=tk.TOP, pady=5)
+        xscrollbar = tk.Scrollbar(topframe, orient=tk.HORIZONTAL, bg=bg)
+        yscrollbar = tk.Scrollbar(topframe, orient=tk.VERTICAL, bg=bg)
+        yscrollbar.pack(side=tk.RIGHT, fill='y', padx=(0,5), pady=(5,18))
+        self.txt = tk.Text(topframe, bg=textbgcolor, height=15, width=100, wrap='none', font=txtFont, xscrollcommand=xscrollbar.set, yscrollcommand=yscrollbar.set)   # PibotoLt
         self.txt.pack(padx=5, pady=5, side=tk.TOP)
         xscrollbar.pack(side=tk.TOP, fill='x', padx=5)
+        xscrollbar.config(command=self.txt.xview)
+        yscrollbar.config(command=self.txt.yview)
         self.src = tk.Frame(self.baseframe, bg=bg)
         self.src.pack(side=tk.TOP, pady=5)
         lb1 = tk.Label(self.src, text='Search', bg=bg)
@@ -251,6 +274,7 @@ class MyApp:
 
         # Set up bindings
         root.bind_all("<Control-q>", self.QuitEvent)
+        root.bind_all("<Control-b>", self.display_best_articles)
         self.keys.bind('<Return>', self.search)
         self.txt.bind("<Button-1>", self.mouseclick)
         self.txt.bind("<Button-3>", self.mouseclick)
@@ -372,12 +396,36 @@ class MyApp:
                         if r[1] > 1: s += '{}  '.format(r[0])
                     self.kw.txt.insert(tk.END, s + '\n')
 
+    def display_best_articles(self, event):
+        self.txt.delete('1.0', tk.END)
+        self.txt.insert(tk.END, '\n')
+        results = sorted(self.best_options, key=lambda item: se.fn_to_nr(item[0])[1]) # sort on mag nr
+        results = sorted(results, key=lambda item: len(item[4]), reverse=True) # sort on #pages
+        for r in results:
+            self.txt.insert(tk.END, '  {:10s} : '.format(r[0]), 'blue')
+            for p in r[4]:
+                self.txt.insert(tk.END, '{:>3d} '.format(p), 'redbold')
+            self.txt.insert(tk.END, '\n')
+
     def search(self, event):
+        global best_options
+
         entry = self.keys.get().lower().strip()
         if entry[0] == '#':
             # open an specific magazine on a specific page
             numbers = entry[1:].split()
-            mag_nr, page = int(numbers[0]), int(numbers[1])
+            if numbers[0].isnumeric():
+                mag_nr = int(numbers[0])
+            else:
+                self.SetStatus('A magazine number is expected')
+                return()
+            page = 1
+            if len(numbers) > 1:
+                if numbers[1].isnumeric():
+                    page = int(numbers[1])
+                else:
+                    self.SetStatus('A page number is expected')
+                    return()
             fn = se.nr_to_fn(mag_nr)
             if fn != '':
                 s = 'evince -i ' + str(page) + ' "'+ se.mag_folder + fn +'" 2>/dev/null &'
@@ -405,12 +453,15 @@ class MyApp:
             self.txt.delete('1.0', tk.END)
             self.txt.insert(tk.END, '\n')
             
-            res = sorted(m.items(), key=lambda item: len(item[1]), reverse=True)
+            res = sorted(m.items(), key=lambda item: se.fn_to_nr(item[0])[1]) # sort on mag number
+            res = sorted(res, key=lambda item: len(item[1]), reverse=True) # sort on #pages
             imax = 100 if len(res) > 100 else len(res)
+            self.best_options = []
             for i in range(imax):
                 mag_s = '  {:10s} : '.format(res[i][0])
                 self.txt.insert(tk.END, mag_s, 'blue')
                 pages = res[i][1]
+                self.best_options.append((res[i][0],) + best_article(pages, max_spacing=se.max_spacing))
                 s = ''
                 for p in pages:
                     self.txt.insert(tk.END, '{:>3d}'.format(p), 'redbold')
@@ -418,6 +469,7 @@ class MyApp:
                     nhits = d[id][0]
                     self.txt.insert(tk.END, ' [{:2d}] '.format(nhits), 'black')
                 self.txt.insert(tk.END, '\n', 'black')
+            self.SetStatus('Found in {} magazines'.format(len(res)))
 
     def Quit(self):
         # Used by menu - Quit command

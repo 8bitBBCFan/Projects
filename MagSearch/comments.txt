@@ -2,8 +2,6 @@ There is no indication how far apart the keywords are. Therefore there is no gar
 
 MagSearch can not find that there is a search function for the MagPi magazine published. Only mention of an index in MagPi51, p93 and MagPi55, p93. Already in MagPi12,p40 it was mentioned to have something in the future. Always in the future ..
 
-Sometimes it is difficult to find the right keywords.
-
 Magazines: MagPi, HackSpace, HelloWorld, Wireframe
 
 Use
@@ -17,6 +15,15 @@ Scroll with mouse wheel to get through the text window
 
 Special case for C++ which is replaced by cpp
 
+The trick is to find the right keywords. Sometimes it is difficult to find the right keywords.
+
+The program does not give a contents of a magazine
+
+There might be a problem with single character terms like C, because loose characters often appear (e.g. as a variable in a program), so this will give a lot of false positives.
+
+Sometimes text can be hidden behind images.
+
 TO DO
 V Open a certain magazine on a certain page. Special command in search function
 V Dropdown menu of magazines should reflect the yaml file, make it automatic
+Possibility to indicate per keyword the match-type. E.g. for 'C' you want an 'exact' match. Can we indicate this with a pre-character such as !c

@@ -27,13 +27,14 @@ class ScanMag:
         self.database = self.config['magazines'][mag_id]['database']
         self.files = [f for f in listdir(self.mag_folder) if isfile(join(self.mag_folder, f)) and f.startswith(self.mag_id)]
         self.stopwords = [w.strip() for w in self.parser['stopwords'][self.language].split(',')]
-        self.except_words = [w.strip() for w in self.parser['except_2char'].split(',')]
+        self.except_words = [w.strip() for w in self.parser['except_1_2char'].split(',')]
         self.except_words += [w.strip() for w in self.parser['except_3char'].split(',')]
         self.results = []
         self.match_mode = self.config['match_mode']
         self.save_db_enable = False
         self.db_file_present = False
         self.overwrite = False
+        self.max_spacing = self.config['max_spacing']
         
         # sort file list according to numbers
         nrs = [self.fn_to_nr(f)[1] for f in self.files]
@@ -79,7 +80,7 @@ class ScanMag:
         with open(file_output, 'rb') as f:
             self.doc = f.read()
 
-        self.doc = re.sub(b'c\+\+', b'cpp', self.doc)
+        self.doc = re.sub(b'(c|C)\+\+', b'cpp', self.doc)
         self.doc = re.sub(b'[\x00-\x2f,\x3a-\x3f,\x5b-\x60,\x7b-\xff]', b' ', self.doc)
         self.wordlst = self.doc.decode().split()
         
@@ -114,6 +115,7 @@ class ScanMag:
                     if not clear:
                         postfix = 'black' if color=='white' else color
                         self.print_gui[1].insert('end', ' '+msg+end, postfix)
+                        self.print_gui[1].see('end')
                     else:
                         self.print_gui[1].delete('1.0', 'end')
                         self.print_gui[1].insert('end', '\n')
@@ -147,7 +149,7 @@ class ScanMag:
             self.mag_db[filnam] = pages
             for page in range(1, maxpage+1):
                 self.pdf2text(self.mag_folder + filnam + '.pdf', page)
-                self.remove_small_words()
+                self.remove_small_words(nchar=int(self.config['remove_size']))
                 self.remove_stopwords()
                 self.freqdict()
                 pages[page] = self.freqtable
@@ -182,9 +184,15 @@ class ScanMag:
                 tot_freq = 0
                 rk = {}
                 for key in keys:
-                    if self.match_mode == '--start':
+                    
+                    # detect key-specific matching
+                    start, exact = False, False
+                    if key[0] == '!': key, exact = key[1:], True
+                    if key[0] == '$': key, start = key[1:], True
+
+                    if self.match_mode == '--start' or start:
                         s = [e for e in dct2.keys() if e.startswith(key)]
-                    elif self.match_mode == '--exact':
+                    elif self.match_mode == '--exact' or exact:
                         s = [e for e in dct2.keys() if key == e]
                     else:
                         s = [e for e in dct2.keys() if key in e]

@@ -44,5 +44,11 @@ magazines:
 
 match_mode: --any
 
+# Maximum allowed gap in page numbers for detecting an article
+max_spacing : 2
+
+# Remove words smaller or equal except reserved words (see parser.yml)
+remove_size : 2
+
 # GUI settings
 textbackgroundcolor: '#FFFFFF'

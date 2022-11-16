@@ -13,12 +13,12 @@ stopwords:
     had, has, hasnt, have, he, hence, her, here, hereafter, hereby, herein, hereupon, 
     hers, herself, he’s, him, himself, his, how, however, http, hundred, i, ie, if, in, 
     inc, indeed, interest, into, is, it, its, itself, it’s, i’m, just, keep, last, latter, 
-    latterly, least, less, let, lets, let’s, like, likes, ltd, made, magpi, make, makes, 
+    latterly, least, less, let, lets, let’s, like, likes, ltd, made, make, makes, 
     making, many, may, me, means, meanwhile, might, mill, mine, more, moreover, most, 
     mostly, move, much, must, my, myself, name, namely, need, neither, never, nevertheless, 
     next, nine, no, nobody, none, noone, nor, not, nothing, now, nowhere, of, off, often, 
     on, once, one, only, onto, or, other, others, otherwise, our, ours, ourselves, out, 
-    over, own, part, per, perhaps, please, possible, put, rather, re, s, same, says, 
+    over, own, per, perhaps, please, possible, put, rather, re, s, same, says, 
     see, seem, seemed, seeming, seems, serious, several, she, she’s, should, show, side, 
     since, sincere, six, sixty, so, some, somehow, someone, something, sometime, sometimes, 
     somewhere, still, such, system, take, ten, than, that, that’s, the, their, them, 
@@ -71,8 +71,8 @@ stopwords:
     zitten, zoals, zodat, zodoende, zodra, zogenaamd, zogenaamde, zolang, zonder, 
     zou, zouden, zoveel, zowel, zozeer, zulke, zullen
 
-except_2char:
-  3d, a6, a8, ai, ir, os, pi, sd, tk, qt, hz
-  
+except_1_2char:
+  c, 2d, 3d, a6, a8, ai, ir, os, pi, sd, tk, qt, hz
+
 except_3char:
   arm, bbc, cpp, cpu, gps, gtk, gui, i2c, led, ssh

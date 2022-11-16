@@ -1,5 +1,91 @@
-helloworld.cc
+Feedback & Question Time
+I am newto RPi. It is great. Thanks for
+your mag. I download it and then
+transferto myKindle whereit is easyto
+read.
 
-100 (helloworld.cc)
+- Dr David C Cusworth
+Very well done for everything
+Raspberry Pi that you are doing. I
+am finding it very interesting and informative.
+
+I love you!
+
+- Petr Masopust
+
+Im a big fan of the raspberry and
+also appreciate all the work you put
+in the MagPi magazine. Its a pleasure to read the articles and feel the
+energy and love your team of volunteers put into that. Thank you
+very much
+
+- TerryHardy.
+
+- Dominik
+from Munich, Germany
+
+Thanks you for the great project
+regarding the pi magazine. When I
+was a child my father used to buy
+these kind of magazines and I
+miss them, not only for me, but for
+the new children who think the only
+OS in existence is that thing called
+windows, and when they look at
+linux just don't know what to do,
+even when they are computer related students. Don't ask when they
+are confronted with the command
+line.
+
+I have read your current issues of
+the mag and am delighted with it. It
+has been a while since this sort of
+publication was available, and I
+have been wanting to get into programming for years, even up to the
+point of attending college. But with
+this I can study at my own pace
+and start my own projects. I dont
+have a pie as of yet, but intend to
+buy the starter pack from Maplin as
+soon as I can. Again, thanks.
+
+- AlvaroMendoza
+
+I was wondering if I could write for
+The Mag Pi magazine, I love the
+magazine, and I of course love
+technology and writing. I was also
+one of the first Raspberry Pi users.
+Thankyou.
+
+- Arman Bhalla
+I just wanted you to know that I love
+your magazine. It is well laid out
+and highly informative. It is the perfect introduction for students, and
+also hobbyists to the wonderful
+world of Raspberry Pi. Believe me
+when I say, you are helping create
+the next generation of Engineers,
+makers, hackers, and artists. Keep
+up the great work.
+
+- David Sanders
+
+- Ryan Hunter
+
+The MagPi is a trademark of The MagPi Ltd. Raspberry Pi is a trademark of the Raspberry Pi foundation. The MagPi magazine is
+collaboratively produced by an independent group of Raspberry Pi owners, and is not affiliated in any way with the Raspberry Pi
+Foundation. It is prohibited to commercially produce this magazine without authorization from The MagPi Ltd. Printing for non commercial
+purposes is agreeable under the Creative Commons license below. The MagPi does not accept ownership or responsibility for the content
+or opinions expressed in any of the articles included in this issue. All articles are checked and tested before the release deadline is met but
+some faults may remain. The reader is responsible for all consequences, both to software and hardware, following the implementation of
+any of the advice or code printed. The MagPi does not claim to own any copyright licenses and all content of the articles are submitted with
+the responsibility lying with that of the article writer. This work is licensed under the Creative Commons Attribution-NonCommercialShareAlike 3.0 Unported License. To view a copy of this license, visit:
+
+http://creativecommons.org/licenses/by-nc-sa/3.0/
+
+Alternatively, send a letter to Creative Commons, 444 Castro Street, Suite 900, Mountain View, California, 94041 , USA.
+
+36
 
 
