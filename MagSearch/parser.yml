@@ -1,6 +1,6 @@
 stopwords:
   EN:
-    a, about, above, across, after, afterwards, again, against, all, almost, alone, along, 
+    a, about, above, achieve, across, after, afterwards, again, against, all, almost, alone, along, 
     already, also, although, always, am, among, amongst, amoungst, amount, an, and, another, 
     any, anyhow, anyone, anything, anyway, anywhere, are, around, as, at, back, be, became, 
     because, become, becomes, becoming, been, before, beforehand, behind, being, below, 
@@ -18,10 +18,10 @@ stopwords:
     mostly, move, much, must, my, myself, name, namely, need, neither, never, nevertheless, 
     next, nine, no, nobody, none, noone, nor, not, nothing, now, nowhere, of, off, often, 
     on, once, one, only, onto, or, other, others, otherwise, our, ours, ourselves, out, 
-    over, own, per, perhaps, please, possible, put, rather, re, s, same, says, 
+    over, own, per, perhaps, please, possible, put, rather, re, require, requires, same, says, 
     see, seem, seemed, seeming, seems, serious, several, she, she’s, should, show, side, 
     since, sincere, six, sixty, so, some, somehow, someone, something, sometime, sometimes, 
-    somewhere, still, such, system, take, ten, than, that, that’s, the, their, them, 
+    somewhere, still, such, system, take, taking, ten, than, that, that’s, the, their, them, 
     themselves, then, thence, there, thereafter, thereby, therefore, therein, thereupon, 
     there’s, these, they, thick, thin, third, this, those, though, three, three, through, 
     throughout, thru, thus, to, together, too, top, toward, towards, twelve, twenty, 
@@ -75,4 +75,4 @@ except_1_2char:
   c, 2d, 3d, a6, a8, ai, ir, os, pi, sd, tk, qt, hz
 
 except_3char:
-  arm, bbc, cpp, cpu, gps, gtk, gui, i2c, led, ssh
+  arm, bbc, bit, cpp, cpu, gps, gtk, gui, i2c, led, rgb,ssh
