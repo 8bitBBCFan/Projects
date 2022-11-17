@@ -20,6 +20,7 @@ from tkinter import messagebox
 from tkinter import font
 import pickle
 import keyboard
+from PIL import Image, ImageTk
 
 # Example messagebox
 # result = messagebox.askokcancel('Title', 'Message')
@@ -167,12 +168,12 @@ class MyApp:
     def __init__(self, root, width=winWidth, height=winHeight, x=200, y=200):
 
         # Program name
-        prognam, version = PROGNAM, VERSION
+        self.prognam, self.version = PROGNAM, VERSION
         
         # Set up title and size, position
         # root.geometry('%dx%d+%d+%d' % (width, height, x, y))
         root.geometry('+%d+%d' % (x, y))
-        root.title(prognam+" "+version)
+        root.title(self.prognam + " " + self.version)
         root.resizable(0,0)         # Switch off resizing
         root.protocol("WM_DELETE_WINDOW", self.QuitWindow)
         
@@ -217,6 +218,7 @@ class MyApp:
 
         # Set up Help menu
         helpmenu = tk.Menu(menubar, tearoff=0, font=gui_fnt, fg=fg, bg=bg2, activeborderwidth=0, activebackground=bg3, activeforeground='white')
+        helpmenu.add_command(label="Manual", command=self.help_manual)
         helpmenu.add_command(label="About", command=self.help_about)
         menubar.add_cascade(label="Help", menu=helpmenu)
                 
@@ -283,6 +285,9 @@ class MyApp:
         self.new_mag()
         self.key_window_open = False
         
+    def help_manual(self):
+        os.system('evince -i 1 manual.pdf 2>/dev/null &')
+
     def help_about(self):
         ha = tk.Toplevel(root)
         bg = '#ededed'
@@ -302,7 +307,7 @@ class MyApp:
         lb4 = tk.Label(fr, text='Search for keywords in a magazine', font=guiFont, bg=bg)
         lb5 = tk.Label(fr, text='Hans van Zon, 2022', font=guiFont, bg=bg)
         
-        lb1.place(relx=0.5, rely=0.24, anchor=tk.CENTER)
+        lb1.place(relx=0.5, rely=0.25, anchor=tk.CENTER)
         lb2.place(relx=0.5, rely=0.58, anchor=tk.CENTER)
         lb3.place(relx=0.5, rely=0.68, anchor=tk.CENTER)
         lb4.place(relx=0.5, rely=0.78, anchor=tk.CENTER)
@@ -314,7 +319,7 @@ class MyApp:
     def key_window(self):
         if not self.key_window_open:
             self.kw = tk.Toplevel(root)
-            self.kw.title('Frequently observed words')
+            self.kw.title('Frequently observed (n>1) words')
             self.kw.geometry('+%d+%d' % (myapp.root.winfo_x()+350, myapp.root.winfo_y()+60))
             self.kw.protocol("WM_DELETE_WINDOW", self.key_window_quit)
             self.kw.resizable(1,1)
@@ -353,11 +358,12 @@ class MyApp:
         se.save_db_enable = True
         se.print(clear=True)
         descr = se.config['magazines'][magazine]['descr']
-        self.SetStatus(descr)
+        self.SetStatus('Ready')
         if se.load_db(se.database):
             se.print(clear=True)
             se.print('The {} has been loaded ({} magazines).'.format(descr, len(se.mag_db)), 'blue')
-            se.print('Enter space-separated keywords in the Search field\n')
+            se.print('Enter space-separated keywords in the Search field or #<magnr> <page>\n')
+        root.title(self.prognam + " " + self.version + " - " +descr)
 
     def get_page(self, xpos, s):
         def __scan(dr):
@@ -414,17 +420,17 @@ class MyApp:
         if entry[0] == '#':
             # open an specific magazine on a specific page
             numbers = entry[1:].split()
-            if numbers[0].isnumeric():
+            if numbers != [] and numbers[0].isnumeric():
                 mag_nr = int(numbers[0])
             else:
-                self.SetStatus('A magazine number is expected')
+                self.SetStatus('A magazine number is expected after #')
                 return()
             page = 1
             if len(numbers) > 1:
                 if numbers[1].isnumeric():
                     page = int(numbers[1])
                 else:
-                    self.SetStatus('A page number is expected')
+                    self.SetStatus('A valid page number is expected as second parameter')
                     return()
             fn = se.nr_to_fn(mag_nr)
             if fn != '':
