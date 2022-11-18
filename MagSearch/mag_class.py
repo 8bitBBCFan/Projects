@@ -9,8 +9,8 @@ from os.path import isfile, join
 import yaml
 
 class ScanMag:
-    def __init__(self):
-        with open('config.yml') as f:
+    def __init__(self, config):
+        with open(config) as f:
             self.config = yaml.load(f, yaml.SafeLoader)
         with open('parser.yml') as f:
             self.parser = yaml.load(f, yaml.SafeLoader)

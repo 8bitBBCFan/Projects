@@ -27,7 +27,7 @@ from PIL import Image, ImageTk
 
 # Program name and version
 PROGNAM = "MagSearch"
-VERSION = 'v0.9.2'
+VERSION = 'v0.9.3'
 
 # Platform
 PLATFORM = None
@@ -52,7 +52,7 @@ elif PLATFORM == 'Linux':
     winHeight   = 320
     statusFont  = ("PibotoLt", 10)
 
-se = ScanMag()
+se = ScanMag('config.yml')
 
 def best_article(lst, max_spacing=2):
     # best article is the article with the largest series of sequential pages
@@ -265,10 +265,11 @@ class MyApp:
         self.match()
         
         # color definitions for text window
-        self.txt.tag_config('blue', foreground='blue', font=('Courier', 10))
-        self.txt.tag_config('black', foreground='black', font=('Courier', 10))
-        self.txt.tag_config('red', foreground='red', font=('Courier', 10))
-        self.txt.tag_config('redbold', foreground='red', font=('Courier', 10, 'bold'))
+        fntnam = 'DejaVu Sans Mono'
+        self.txt.tag_config('blue', foreground='blue', font=(fntnam, 10))
+        self.txt.tag_config('black', foreground='black', font=(fntnam, 10))
+        self.txt.tag_config('red', foreground='red', font=(fntnam, 10))
+        self.txt.tag_config('redbold', foreground='red', font=(fntnam, 10, 'bold'))
         
         # set output of ScanMag to the GUI
         se.print_gui = (root, self.txt)
@@ -362,7 +363,8 @@ class MyApp:
         if se.load_db(se.database):
             se.print(clear=True)
             se.print('The {} has been loaded ({} magazines).'.format(descr, len(se.mag_db)), 'blue')
-            se.print('Enter space-separated keywords in the Search field or #<magnr> <page>\n')
+            se.print('Enter space-separated keywords in the Search field or \'#magnr page\'')
+            se.print('Keywords can be preceded with \'!\' (exact match) or \'$\' (start match)\n')
         root.title(self.prognam + " " + self.version + " - " +descr)
 
     def get_page(self, xpos, s):
