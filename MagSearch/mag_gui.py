@@ -20,6 +20,7 @@ from tkinter import messagebox
 from tkinter import font
 import pickle
 import keyboard
+import subprocess # only required for Windows
 
 # Example messagebox
 # result = messagebox.askokcancel('Title', 'Message')
@@ -36,10 +37,11 @@ if os.name == 'posix': PLATFORM = 'Linux'
 if PLATFORM == 'Windows':
     nasPath =  'D:\\HOBBY'
     buttonWidth = 6
-    winWidth    = 750
-    winHeight   = 400
+    winWidth    = 850
+    winHeight   = 415
     guiFont     = ("Segoe UI", 9)
     txtFont     = ("Courier New", 10)
+    txt2Font    = ("Segoe UI", 10)
     statusFont  = ("Segoe UI", 9)
     config_file = 'config_windows.yml'
     
@@ -48,12 +50,22 @@ elif PLATFORM == 'Linux':
     buttonWidth = 6
     guiFont     = ("PibotoLt", 12)
     txtFont     = ("Courier", 9)
+    txt2Font    = ("PibotoLt", 11)
     winWidth    = 850
     winHeight   = 320
     statusFont  = ("PibotoLt", 10)
     config_file = 'config.yml'
 
 se = ScanMag(config_file)
+
+def pdf_reader(file, page):
+    if PLATFORM == 'Linux':
+        s = 'evince -i ' + str(page) + ' "'+ file +'" 2>/dev/null &'
+        os.system(s)
+    else:
+        s = 'C:/Program Files (x86)/Adobe/Acrobat Reader DC/Reader/AcroRd32 '
+        s += '/A "page=' + str(page) + '"' + ' "' + file + '"'
+        subprocess.Popen(s, creationflags=0x00000008)
 
 def best_article(lst, max_spacing=2):
     # best article is the article with the largest series of sequential pages
@@ -248,7 +260,7 @@ class MyApp:
         yscrollbar.config(command=self.txt.yview)
         self.src = tk.Frame(self.baseframe, bg=bg)
         self.src.pack(side=tk.TOP, pady=5)
-        lb1 = tk.Label(self.src, text='Search', bg=bg, font=("PibotoLt", 11))
+        lb1 = tk.Label(self.src, text='Search', bg=bg, font=txt2Font)
         self.keys = tk.Entry(self.src, width=45, justify=tk.CENTER)
         lb1.grid(row=0, column=0, padx=(0, 7), pady=(5,0))
         self.keys.grid(row=0, column=1, pady=(5,0))
@@ -256,9 +268,9 @@ class MyApp:
         # radiobuttons for match
         self.match_nr = tk.IntVar()
         self.match_nr.set(['--any', '--start', '--exact'].index(se.config['match_mode']))
-        rb1 = tk.Radiobutton(self.src, text='Any', font=("PibotoLt", 11), variable=self.match_nr, value=0, bg=bg, highlightthickness=0, command=self.match)
-        rb2 = tk.Radiobutton(self.src, text='Start', font=("PibotoLt", 11), variable=self.match_nr, bg=bg, value=1, highlightthickness=0, command=self.match)
-        rb3 = tk.Radiobutton(self.src, text='Exact', font=("PibotoLt", 11), variable=self.match_nr, bg=bg, value=2, highlightthickness=0, command=self.match)
+        rb1 = tk.Radiobutton(self.src, text='Any', font=txt2Font, variable=self.match_nr, value=0, bg=bg, highlightthickness=0, command=self.match)
+        rb2 = tk.Radiobutton(self.src, text='Start', font=txt2Font, variable=self.match_nr, bg=bg, value=1, highlightthickness=0, command=self.match)
+        rb3 = tk.Radiobutton(self.src, text='Exact', font=txt2Font, variable=self.match_nr, bg=bg, value=2, highlightthickness=0, command=self.match)
         rb1.grid(row=0, column=2, pady=(5,0), padx=(10,0))
         rb2.grid(row=0, column=3, pady=(5,0))
         rb3.grid(row=0, column=4, pady=(5,0))
@@ -287,7 +299,8 @@ class MyApp:
         self.key_window_open = False
         
     def help_manual(self):
-        os.system('evince -i 1 manual.pdf 2>/dev/null &')
+        # os.system('evince -i 1 manual.pdf 2>/dev/null &')
+        pdf_reader('manual.pdf', 1)
 
     def help_about(self):
         ha = tk.Toplevel(root)
@@ -393,9 +406,10 @@ class MyApp:
             if page != -1:
                 if event.num==1: # left mouseclick, open PDF
                     fl = se.mag_folder + magazine + '.pdf'
-                    s = 'evince -i ' + str(page) + ' "'+ fl +'" 2>/dev/null &'
-                    os.system(s)
-                    
+#                     s = 'evince -i ' + str(page) + ' "'+ fl +'" 2>/dev/null &'
+#                     os.system(s)
+                    pdf_reader(fl, page)
+
                 if event.num==3: # right mouseclick, display keywords
                     self.key_window()
                     self.kw.txt.delete('1.0', tk.END)
