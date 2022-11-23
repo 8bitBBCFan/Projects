@@ -20,7 +20,6 @@ from tkinter import messagebox
 from tkinter import font
 import pickle
 import keyboard
-import subprocess # only required for Windows
 
 # Example messagebox
 # result = messagebox.askokcancel('Title', 'Message')
@@ -35,6 +34,8 @@ if os.name == 'nt': PLATFORM = 'Windows'
 if os.name == 'posix': PLATFORM = 'Linux'
 
 if PLATFORM == 'Windows':
+    import subprocess
+    
     nasPath =  'D:\\HOBBY'
     buttonWidth = 6
     winWidth    = 850
