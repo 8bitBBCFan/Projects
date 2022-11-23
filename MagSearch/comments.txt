@@ -23,6 +23,9 @@ There might be a problem with single character terms like C, because loose chara
 
 Sometimes text can be hidden behind images.
 
+Recoll finds keywords in the same PDF, not necessarily on the same page. MagSearch is better suited for finding articles.
+Recoll is not able to find a part of a word, unless used with wildcards. Using a proximity value you can roughly have the words on a page
+
 TO DO
 V Open a certain magazine on a certain page. Special command in search function
 V Dropdown menu of magazines should reflect the yaml file, make it automatic

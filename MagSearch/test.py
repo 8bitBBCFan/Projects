@@ -25,22 +25,25 @@
 import sys, os, os.path, re
 from mag_class import ScanMag
 
-se = ScanMag()
+se = ScanMag('config.yml')
 se.init('magpi')
-
-file_input = '/home/pi/nas/HOBBY/Magazines/MagPi/MagPi65.pdf'
-file_output = './tmp.txt'
-page = 54
-s = 'pdftotext -enc "UTF-8" -q -f '+str(page)+' -l '+str(page)+' "'+file_input+'" "'+file_output+'"'
-os.system(s)
-
-with open(file_output, 'rb') as f:
-    doc = f.read()
-doc = re.sub(b'(c|C)\+\+', b'cpp', doc)
-doc = re.sub(b'[\x00-\x2f,\x3a-\x3f,\x5b-\x60,\x7b-\xff]', b' ', doc)
-se.wordlst = doc.decode().split()
-se.remove_small_words()
-se.remove_stopwords()
+se.load_db('magpi.db')
+se.search(['mike','cook','oscil'], 'MagPi71')
+print(se.nr_to_fn(75))
+# 
+# file_input = '/home/pi/nas/HOBBY/Magazines/MagPi/MagPi65.pdf'
+# file_output = './tmp.txt'
+# page = 54
+# s = 'pdftotext -enc "UTF-8" -q -f '+str(page)+' -l '+str(page)+' "'+file_input+'" "'+file_output+'"'
+# os.system(s)
+# 
+# with open(file_output, 'rb') as f:
+#     doc = f.read()
+# doc = re.sub(b'(c|C)\+\+', b'cpp', doc)
+# doc = re.sub(b'[\x00-\x2f,\x3a-\x3f,\x5b-\x60,\x7b-\xff]', b' ', doc)
+# se.wordlst = doc.decode().split()
+# se.remove_small_words()
+# se.remove_stopwords()
 
 # import yaml
 # 

@@ -20,14 +20,13 @@ from tkinter import messagebox
 from tkinter import font
 import pickle
 import keyboard
-from PIL import Image, ImageTk
 
 # Example messagebox
 # result = messagebox.askokcancel('Title', 'Message')
 
 # Program name and version
 PROGNAM = "MagSearch"
-VERSION = 'v0.9.3'
+VERSION = 'v0.9.4'
 
 # Platform
 PLATFORM = None
@@ -355,17 +354,20 @@ class MyApp:
             self.db_main = None
 
         magazine = se.magazines[self.mag.get()]
-        se.init(magazine)
-        se.save_db_enable = True
         se.print(clear=True)
-        descr = se.config['magazines'][magazine]['descr']
-        self.SetStatus('Ready')
-        if se.load_db(se.database):
-            se.print(clear=True)
-            se.print('The {} has been loaded ({} magazines).'.format(descr, len(se.mag_db)), 'blue')
-            se.print('Enter space-separated keywords in the Search field or \'#magnr page\'')
-            se.print('Keywords can be preceded with \'!\' (exact match) or \'$\' (start match)\n')
-        root.title(self.prognam + " " + self.version + " - " +descr)
+        err = se.init(magazine)
+        if err == '':
+            se.save_db_enable = True
+            descr = se.config['magazines'][magazine]['descr']
+            self.SetStatus('Ready')
+            if se.load_db(se.database):
+                se.print(clear=True)
+                se.print('The {} has been loaded ({} magazines).'.format(descr, len(se.mag_db)), 'blue')
+                se.print('Enter space-separated keywords in the Search field or \'#magnr page\'')
+                se.print('Keywords can be preceded with \'!\' (exact match) or \'$\' (start match)\n')
+            root.title(self.prognam + " " + self.version + " - " +descr)
+        else:
+            se.print(err, 'red')
 
     def get_page(self, xpos, s):
         def __scan(dr):
@@ -439,10 +441,17 @@ class MyApp:
                 s = 'evince -i ' + str(page) + ' "'+ se.mag_folder + fn +'" 2>/dev/null &'
                 os.system(s)
 
-        else:
+        else:   
             # split string in keywords and replace c++ by cpp
             keys = [s.replace('c++', 'cpp') for s in entry.split()]
-            se.search(keys)
+            
+            if keys[0][0] == '@':
+                mag = se.nr_to_fn(int(keys[0][1:])).split('.')[0]
+                keys = keys[1:]
+            else:
+                mag = ''
+
+            se.search(keys, mag)
             
             d = {}
             for e in se.results:

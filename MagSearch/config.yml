@@ -42,7 +42,7 @@ magazines:
 #   --start : search term has to be at the start of the keyword
 #   --exact : exact match between search term and keyword
 
-match_mode: --any
+match_mode: --start
 
 # Maximum allowed gap in page numbers for detecting an article
 max_spacing : 2

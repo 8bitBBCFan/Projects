@@ -24,6 +24,8 @@ class ScanMag:
         self.mag_id = self.config['magazines'][mag_id]['filename']
         self.language = self.config['magazines'][mag_id]['language']
         self.mag_folder = self.config['magazines'][mag_id]['directory']
+        if not os.path.exists(self.mag_folder):
+            return('The folder {} does not exist'.format(self.mag_folder))
         self.database = self.config['magazines'][mag_id]['database']
         self.files = [f for f in listdir(self.mag_folder) if isfile(join(self.mag_folder, f)) and f.startswith(self.mag_id)]
         self.stopwords = [w.strip() for w in self.parser['stopwords'][self.language].split(',')]
@@ -39,6 +41,7 @@ class ScanMag:
         # sort file list according to numbers
         nrs = [self.fn_to_nr(f)[1] for f in self.files]
         self.files = [x for _,x in sorted(zip(nrs, self.files), key=lambda pair: pair[0])]
+        return('')
 
     def fn_to_nr(self, fn):
         # retrieve integer number and descriptor from filename
@@ -173,10 +176,8 @@ class ScanMag:
             with open(db_file, 'wb') as f:
                 pickle.dump(self.mag_db, f)
 
-    def search(self, keys):
-        # keys is a list of key words
-        result = {}   # dict van alle gevonden resultaten, index is mag_pagina
-        for nummer in self.mag_db.keys():
+    def search(self, keys, mag=''):
+        def __core__(nummer):
             c = self.mag_db[nummer]
             maxpage = len(c)-1
             for page in range(1, maxpage+1):
@@ -186,13 +187,13 @@ class ScanMag:
                 for key in keys:
                     
                     # detect key-specific matching
-                    start, exact = False, False
-                    if key[0] == '!': key, exact = key[1:], True
-                    if key[0] == '$': key, start = key[1:], True
+                    match_mode = self.match_mode
+                    if key[0] == '!': key, match_mode = key[1:], '--exact'
+                    if key[0] == '$': key, match_mode = key[1:], '--start'
 
-                    if self.match_mode == '--start' or start:
+                    if match_mode == '--start':
                         s = [e for e in dct2.keys() if e.startswith(key)]
-                    elif self.match_mode == '--exact' or exact:
+                    elif match_mode == '--exact':
                         s = [e for e in dct2.keys() if key == e]
                     else:
                         s = [e for e in dct2.keys() if key in e]
@@ -207,6 +208,14 @@ class ScanMag:
                     rk[key] = freq
                 if tot_freq != 0:
                     result['{}_{}'.format(nummer, page)] = tot_freq, rk
+                    
+        # keys is a list of key words
+        result = {}   # dict van alle gevonden resultaten, index is mag_pagina
+        if mag == '':
+            for nummer in self.mag_db.keys():
+                __core__(nummer)
+        else:
+            __core__(mag)
 
         # list of sorted results
         self.results = sorted(result.items(), key=lambda item: item[1][0], reverse=True)
