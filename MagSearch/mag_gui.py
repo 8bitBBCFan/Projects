@@ -41,6 +41,7 @@ if PLATFORM == 'Windows':
     guiFont     = ("Segoe UI", 9)
     txtFont     = ("Courier New", 10)
     statusFont  = ("Segoe UI", 9)
+    config_file = 'config_windows.yml'
     
 elif PLATFORM == 'Linux':
     nasPath = r'/home/pi/nas/HOBBY'
@@ -50,8 +51,9 @@ elif PLATFORM == 'Linux':
     winWidth    = 850
     winHeight   = 320
     statusFont  = ("PibotoLt", 10)
+    config_file = 'config.yml'
 
-se = ScanMag('config.yml')
+se = ScanMag(config_file)
 
 def best_article(lst, max_spacing=2):
     # best article is the article with the largest series of sequential pages
