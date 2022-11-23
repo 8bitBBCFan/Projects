@@ -36,8 +36,8 @@ if os.name == 'posix': PLATFORM = 'Linux'
 if PLATFORM == 'Windows':
     nasPath =  'D:\\HOBBY'
     buttonWidth = 6
-    winWidth    = 1100
-    winHeight   = 380
+    winWidth    = 750
+    winHeight   = 400
     guiFont     = ("Segoe UI", 9)
     txtFont     = ("Courier New", 10)
     statusFont  = ("Segoe UI", 9)
@@ -172,8 +172,7 @@ class MyApp:
         self.prognam, self.version = PROGNAM, VERSION
         
         # Set up title and size, position
-        # root.geometry('%dx%d+%d+%d' % (width, height, x, y))
-        root.geometry('+%d+%d' % (x, y))
+        root.geometry('%dx%d+%d+%d' % (winWidth, winHeight, x, y))
         root.title(self.prognam + " " + self.version)
         root.resizable(0,0)         # Switch off resizing
         root.protocol("WM_DELETE_WINDOW", self.QuitWindow)
@@ -183,7 +182,7 @@ class MyApp:
         bg   = "#ededed"   # background menu and status bar #ededed
         bg2  = "#fcfcfc"   # background pulldown menu
         bg3  = '#87919b'   # color of highlighted window title or menu item
-        gui_fnt = ("PibotoLt", 12)
+        gui_fnt = guiFont
         
         style = ttk.Style()
         style.theme_use("clam")
