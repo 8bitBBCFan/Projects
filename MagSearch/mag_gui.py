@@ -52,8 +52,8 @@ elif PLATFORM == 'Linux':
     guiFont     = ("PibotoLt", 12)
     txtFont     = ("Courier", 9)
     txt2Font    = ("PibotoLt", 11)
-    winWidth    = 850
-    winHeight   = 320
+    winWidth    = 750
+    winHeight   = 330
     statusFont  = ("PibotoLt", 10)
     config_file = 'config.yml'
 
@@ -282,7 +282,7 @@ class MyApp:
         self.txt.tag_config('blue', foreground='blue', font=(fntnam, 10))
         self.txt.tag_config('black', foreground='black', font=(fntnam, 10))
         self.txt.tag_config('red', foreground='red', font=(fntnam, 10))
-        self.txt.tag_config('redbold', foreground='red', font=(fntnam, 10, 'bold'))
+        self.txt.tag_config('redbold', foreground='black', font=(fntnam, 10, 'bold'))
         
         # set output of ScanMag to the GUI
         se.print_gui = (root, self.txt)
