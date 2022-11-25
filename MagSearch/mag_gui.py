@@ -292,6 +292,8 @@ class MyApp:
         root.bind_all("<Control-q>", self.QuitEvent)
         root.bind_all("<Control-b>", self.display_best_articles)
         self.keys.bind('<Return>', self.search)
+        self.keys.bind('<Button-2>', self.display_best_articles)
+        self.keys.bind('<Button-3>', self.search)
         self.txt.bind("<Button-1>", self.mouseclick)
         self.txt.bind("<Button-3>", self.mouseclick)
         
