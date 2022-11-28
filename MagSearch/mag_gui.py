@@ -8,6 +8,7 @@
 # sudo pip3 install PyPDF2
 # sudo pip3 install pyyaml
 # sudo pip3 install keyboard. keyboard module must be run under root
+# PI: Preferences -> Add/Remove Software -> evince
 
 import sys, os, os.path
 sys.path.append('/home/pi/Python/lib')
@@ -53,7 +54,7 @@ elif PLATFORM == 'Linux':
     txtFont     = ("Courier", 9)
     txt2Font    = ("PibotoLt", 11)
     winWidth    = 750
-    winHeight   = 330
+    winHeight   = 300 # was 330?
     statusFont  = ("PibotoLt", 10)
     config_file = 'config.yml'
 
