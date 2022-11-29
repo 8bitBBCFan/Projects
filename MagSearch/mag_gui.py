@@ -54,7 +54,7 @@ elif PLATFORM == 'Linux':
     txtFont     = ("Courier", 9)
     txt2Font    = ("PibotoLt", 11)
     winWidth    = 750
-    winHeight   = 300 # was 330?
+    winHeight   = 330
     statusFont  = ("PibotoLt", 10)
     config_file = 'config.yml'
 
