@@ -256,7 +256,7 @@ class MyApp:
         xscrollbar = tk.Scrollbar(topframe, orient=tk.HORIZONTAL, bg=bg)
         yscrollbar = tk.Scrollbar(topframe, orient=tk.VERTICAL, bg=bg)
         yscrollbar.pack(side=tk.RIGHT, fill='y', padx=(0,5), pady=(5,18))
-        self.txt = tk.Text(topframe, bg=textbgcolor, height=15, width=100, wrap='none', font=txtFont, xscrollcommand=xscrollbar.set, yscrollcommand=yscrollbar.set)   # PibotoLt
+        self.txt = tk.Text(topframe, bg=textbgcolor, height=5, width=100, wrap='none', font=txtFont, xscrollcommand=xscrollbar.set, yscrollcommand=yscrollbar.set)   # PibotoLt
         self.txt.pack(padx=5, pady=5, side=tk.TOP, fill=tk.Y, expand=tk.TRUE)
         xscrollbar.pack(side=tk.TOP, fill='x', padx=5)
         xscrollbar.config(command=self.txt.xview)
