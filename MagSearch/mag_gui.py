@@ -8,6 +8,7 @@
 # sudo pip3 install PyPDF2
 # sudo pip3 install pyyaml
 # sudo pip3 install keyboard. keyboard module must be run under root
+# PI: Preferences -> Add/Remove Software -> evince
 
 import sys, os, os.path
 sys.path.append('/home/pi/Python/lib')
@@ -187,7 +188,7 @@ class MyApp:
         # Set up title and size, position
         root.geometry('%dx%d+%d+%d' % (winWidth, winHeight, x, y))
         root.title(self.prognam + " " + self.version)
-        root.resizable(0,0)         # Switch off resizing
+        root.resizable(0,1)         # Switch off resizing
         root.protocol("WM_DELETE_WINDOW", self.QuitWindow)
         
         # GUI style
@@ -250,12 +251,13 @@ class MyApp:
         # Widget definitions
         textbgcolor = se.config['textbackgroundcolor']
         topframe = tk.Frame(self.baseframe, bg=bg) # for text and scrollbars
-        topframe.pack(side=tk.TOP, pady=5)
+        topframe.pack(side=tk.TOP, pady=5, expand=tk.TRUE, fill=tk.Y)
+
         xscrollbar = tk.Scrollbar(topframe, orient=tk.HORIZONTAL, bg=bg)
         yscrollbar = tk.Scrollbar(topframe, orient=tk.VERTICAL, bg=bg)
         yscrollbar.pack(side=tk.RIGHT, fill='y', padx=(0,5), pady=(5,18))
-        self.txt = tk.Text(topframe, bg=textbgcolor, height=15, width=100, wrap='none', font=txtFont, xscrollcommand=xscrollbar.set, yscrollcommand=yscrollbar.set)   # PibotoLt
-        self.txt.pack(padx=5, pady=5, side=tk.TOP)
+        self.txt = tk.Text(topframe, bg=textbgcolor, height=5, width=100, wrap='none', font=txtFont, xscrollcommand=xscrollbar.set, yscrollcommand=yscrollbar.set)   # PibotoLt
+        self.txt.pack(padx=5, pady=5, side=tk.TOP, fill=tk.Y, expand=tk.TRUE)
         xscrollbar.pack(side=tk.TOP, fill='x', padx=5)
         xscrollbar.config(command=self.txt.xview)
         yscrollbar.config(command=self.txt.yview)
