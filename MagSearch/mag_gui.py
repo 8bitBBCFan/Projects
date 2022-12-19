@@ -47,6 +47,9 @@ if PLATFORM == 'Windows':
     statusFont  = ("Segoe UI", 9)
     config_file = 'config_windows.yml'
     
+    # currently pdftotext is not installed on Windows, so new magazines cannot be added on Windows
+    pdftotext_enable = False
+    
 elif PLATFORM == 'Linux':
     nasPath = r'/home/pi/nas/HOBBY'
     buttonWidth = 6
@@ -57,6 +60,8 @@ elif PLATFORM == 'Linux':
     winHeight   = 330
     statusFont  = ("PibotoLt", 10)
     config_file = 'config.yml'
+    
+    pdftotext_enable = True
 
 se = ScanMag(config_file)
 
@@ -104,13 +109,15 @@ class DatabaseMaintenance:
         self.statusbar = ttk.Label(root, text='Ready', anchor=tk.W, font=statusFont)
         self.statusbar.pack(side=tk.BOTTOM, fill=tk.X)
         
+        state = 'normal' if pdftotext_enable else 'disabled'
+        
         offx, offy = 25, 15
         lb1 = ttk.Label(self.baseframe, text='Start')
         lb2 = ttk.Label(self.baseframe, text='End')
         self.en1 = ttk.Entry(self.baseframe, width=5, justify=tk.CENTER)
         self.en2 = ttk.Entry(self.baseframe, width=5, justify=tk.CENTER)
-        bt1 = ttk.Button(self.baseframe, text='Add', state='normal', width=6, command=self.add)
-        bt2 = ttk.Button(self.baseframe, text='New', state='normal', width=6, command=self.new)
+        bt1 = ttk.Button(self.baseframe, text='Add', state=state, width=6, command=self.add)
+        bt2 = ttk.Button(self.baseframe, text='New', state=state, width=6, command=self.new)
         lb1.grid(row=0, column=0, sticky='e', padx=(offx,0), pady=(offy,0))
         self.en1.grid(row=0, column=1, sticky='e', padx=(10,0), pady=(offy,0))
         bt1.grid(row=0, column=2, sticky='e', padx=(10,10), pady=(offy,5))
@@ -246,15 +253,15 @@ class MyApp:
         
         # Statusbar: set text with self.statusbar["text"]
         self.statusbar = ttk.Label(root, text="Ready", anchor=tk.W)
-        self.statusbar.pack(side=tk.BOTTOM, fill=tk.X)
+        self.statusbar.pack(side=tk.BOTTOM, fill=tk.X, padx=5)
         
         # Widget definitions
         textbgcolor = se.config['textbackgroundcolor']
         topframe = tk.Frame(self.baseframe, bg=bg) # for text and scrollbars
         topframe.pack(side=tk.TOP, pady=5, expand=tk.TRUE, fill=tk.Y)
 
-        xscrollbar = tk.Scrollbar(topframe, orient=tk.HORIZONTAL, bg=bg)
-        yscrollbar = tk.Scrollbar(topframe, orient=tk.VERTICAL, bg=bg)
+        xscrollbar = tk.Scrollbar(topframe, orient=tk.HORIZONTAL, bg=bg, width=10)
+        yscrollbar = tk.Scrollbar(topframe, orient=tk.VERTICAL, bg=bg, width=10)
         yscrollbar.pack(side=tk.RIGHT, fill='y', padx=(0,5), pady=(5,18))
         self.txt = tk.Text(topframe, bg=textbgcolor, height=5, width=100, wrap='none', font=txtFont, xscrollcommand=xscrollbar.set, yscrollcommand=yscrollbar.set)   # PibotoLt
         self.txt.pack(padx=5, pady=5, side=tk.TOP, fill=tk.Y, expand=tk.TRUE)
@@ -262,11 +269,14 @@ class MyApp:
         xscrollbar.config(command=self.txt.xview)
         yscrollbar.config(command=self.txt.yview)
         self.src = tk.Frame(self.baseframe, bg=bg)
-        self.src.pack(side=tk.TOP, pady=5)
+        self.src.pack(side=tk.TOP, pady=5, fill=tk.X, padx=(50,50))
+        self.src.columnconfigure(1, weight=1) # this makes column 1 stretchable
         lb1 = tk.Label(self.src, text='Search', bg=bg, font=txt2Font)
-        self.keys = tk.Entry(self.src, width=45, justify=tk.CENTER)
-        lb1.grid(row=0, column=0, padx=(0, 7), pady=(5,0))
-        self.keys.grid(row=0, column=1, pady=(5,0))
+        self.keys = tk.Entry(self.src, width=200, justify=tk.CENTER)
+        
+        pd = (0,0)
+        lb1.grid(row=0, column=0, padx=(0, 7), pady=pd, sticky='ew')
+        self.keys.grid(row=0, column=1, pady=pd)
         
         # radiobuttons for match
         self.match_nr = tk.IntVar()
@@ -274,17 +284,17 @@ class MyApp:
         rb1 = tk.Radiobutton(self.src, text='Any', font=txt2Font, variable=self.match_nr, value=0, bg=bg, highlightthickness=0, command=self.match)
         rb2 = tk.Radiobutton(self.src, text='Start', font=txt2Font, variable=self.match_nr, bg=bg, value=1, highlightthickness=0, command=self.match)
         rb3 = tk.Radiobutton(self.src, text='Exact', font=txt2Font, variable=self.match_nr, bg=bg, value=2, highlightthickness=0, command=self.match)
-        rb1.grid(row=0, column=2, pady=(5,0), padx=(10,0))
-        rb2.grid(row=0, column=3, pady=(5,0))
-        rb3.grid(row=0, column=4, pady=(5,0))
+        rb1.grid(row=0, column=2, pady=pd, padx=(10,0))
+        rb2.grid(row=0, column=3, pady=pd)
+        rb3.grid(row=0, column=4, pady=pd)
         self.match()
         
         # color definitions for text window
-        fntnam = 'DejaVu Sans Mono'
-        self.txt.tag_config('blue', foreground='blue', font=(fntnam, 10))
-        self.txt.tag_config('black', foreground='black', font=(fntnam, 10))
-        self.txt.tag_config('red', foreground='red', font=(fntnam, 10))
-        self.txt.tag_config('redbold', foreground='black', font=(fntnam, 10, 'bold'))
+        fntnam, sz = 'DejaVu Sans Mono', 9
+        self.txt.tag_config('blue', foreground='blue', font=(fntnam, sz))
+        self.txt.tag_config('black', foreground='black', font=(fntnam, sz))
+        self.txt.tag_config('red', foreground='red', font=(fntnam, sz))
+        self.txt.tag_config('redbold', foreground='black', font=(fntnam, sz, 'bold'))
         
         # set output of ScanMag to the GUI
         se.print_gui = (root, self.txt)
@@ -383,7 +393,8 @@ class MyApp:
                 se.print(clear=True)
                 se.print('The {} has been loaded ({} magazines).'.format(descr, len(se.mag_db)), 'blue')
                 se.print('Enter space-separated keywords in the Search field or \'#magnr page\'')
-                se.print('Keywords can be preceded with \'!\' (exact match) or \'$\' (start match)\n')
+                se.print('Keywords can be preceded with \'!\' (exact match) or \'$\' (start match)')
+                se.print('To search in one magazine only, precede the keywords by @magnr\n')
             root.title(self.prognam + " " + self.version + " - " +descr)
         else:
             se.print(err, 'red')
