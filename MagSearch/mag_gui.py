@@ -65,7 +65,7 @@ def pdf_reader(file, page):
         s = 'evince -i ' + str(page) + ' "'+ file +'" 2>/dev/null &'
         os.system(s)
     else:
-        s = 'C:/Program Files (x86)/Adobe/Acrobat Reader DC/Reader/AcroRd32 '
+        s = 'C:/Program Files/Adobe/Acrobat DC/Acrobat/Acrobat.exe ' # Windows 10
         s += '/A "page=' + str(page) + '"' + ' "' + file + '"'
         subprocess.Popen(s, creationflags=0x00000008)
 
