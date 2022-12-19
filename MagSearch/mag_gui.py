@@ -442,7 +442,7 @@ class MyApp:
 
         entry = self.keys.get().lower().strip()
         if entry[0] == '#':
-            # open an specific magazine on a specific page
+            # open a specific magazine on a specific page
             numbers = entry[1:].split()
             if numbers != [] and numbers[0].isnumeric():
                 mag_nr = int(numbers[0])
@@ -458,8 +458,7 @@ class MyApp:
                     return()
             fn = se.nr_to_fn(mag_nr)
             if fn != '':
-                s = 'evince -i ' + str(page) + ' "'+ se.mag_folder + fn +'" 2>/dev/null &'
-                os.system(s)
+                pdf_reader(se.mag_folder + fn, page)
 
         else:   
             # split string in keywords and replace c++ by cpp
