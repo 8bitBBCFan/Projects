@@ -27,7 +27,7 @@ import keyboard
 
 # Program name and version
 PROGNAM = "MagSearch"
-VERSION = 'v0.9.4'
+VERSION = 'v0.9.5'
 
 # Platform
 PLATFORM = None
@@ -57,7 +57,7 @@ elif PLATFORM == 'Linux':
     guiFont     = ("PibotoLt", 12)
     txtFont     = ("Courier", 9)
     txt2Font    = ("PibotoLt", 11)
-    winWidth    = 750
+    winWidth    = 650
     winHeight   = 330
     statusFont  = ("PibotoLt", 10)
     config_file = 'config.yml'
@@ -196,7 +196,7 @@ class MyApp:
         # Set up title and size, position
         root.geometry('%dx%d+%d+%d' % (winWidth, winHeight, x, y))
         root.title(self.prognam + " " + self.version)
-        root.resizable(0,1)         # Switch off resizing
+        root.resizable(1,1)         # Switch off resizing
         root.protocol("WM_DELETE_WINDOW", self.QuitWindow)
         
         # GUI style
@@ -259,13 +259,13 @@ class MyApp:
         # Widget definitions
         textbgcolor = se.config['textbackgroundcolor']
         topframe = tk.Frame(self.baseframe, bg=bg) # for text and scrollbars
-        topframe.pack(side=tk.TOP, pady=5, expand=tk.TRUE, fill=tk.Y)
+        topframe.pack(side=tk.TOP, pady=5, expand=tk.TRUE, fill=tk.BOTH)
 
         xscrollbar = tk.Scrollbar(topframe, orient=tk.HORIZONTAL, bg=bg, width=10)
         yscrollbar = tk.Scrollbar(topframe, orient=tk.VERTICAL, bg=bg, width=10)
         yscrollbar.pack(side=tk.RIGHT, fill='y', padx=(0,5), pady=(5,18))
         self.txt = tk.Text(topframe, bg=textbgcolor, height=5, width=100, wrap='none', font=txtFont, xscrollcommand=xscrollbar.set, yscrollcommand=yscrollbar.set)   # PibotoLt
-        self.txt.pack(padx=5, pady=5, side=tk.TOP, fill=tk.Y, expand=tk.TRUE)
+        self.txt.pack(padx=5, pady=5, side=tk.TOP, fill=tk.BOTH, expand=tk.TRUE)
         xscrollbar.pack(side=tk.TOP, fill='x', padx=5)
         xscrollbar.config(command=self.txt.xview)
         yscrollbar.config(command=self.txt.yview)
@@ -335,7 +335,7 @@ class MyApp:
         lb2 = tk.Label(fr, text=PROGNAM, font=guiFont + ('bold',), bg=bg)
         lb3 = tk.Label(fr, text=VERSION[1:], font=guiFont, bg=bg)
         lb4 = tk.Label(fr, text='Search for keywords in a magazine', font=guiFont, bg=bg)
-        lb5 = tk.Label(fr, text='Hans van Zon, 2022', font=guiFont, bg=bg)
+        lb5 = tk.Label(fr, text='Copyright('+u'\u00A9'+') 2022 Hans van Zon', font=guiFont, bg=bg)
         
         lb1.place(relx=0.5, rely=0.25, anchor=tk.CENTER)
         lb2.place(relx=0.5, rely=0.58, anchor=tk.CENTER)
