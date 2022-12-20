@@ -334,7 +334,7 @@ class MyApp:
         lb2 = tk.Label(fr, text=PROGNAM, font=guiFont + ('bold',), bg=bg)
         lb3 = tk.Label(fr, text=VERSION[1:], font=guiFont, bg=bg)
         lb4 = tk.Label(fr, text='Search for keywords in a magazine', font=guiFont, bg=bg)
-        lb5 = tk.Label(fr, text='Hans van Zon, 2022', font=guiFont, bg=bg)
+        lb5 = tk.Label(fr, text='Copyright('+u'\u00A9'+') 2022 Hans van Zon', font=guiFont, bg=bg)
         
         lb1.place(relx=0.5, rely=0.25, anchor=tk.CENTER)
         lb2.place(relx=0.5, rely=0.58, anchor=tk.CENTER)
