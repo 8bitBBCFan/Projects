@@ -33,6 +33,7 @@ VERSION = 'v0.9.5'
 PLATFORM = None
 if os.name == 'nt': PLATFORM = 'Windows'
 if os.name == 'posix': PLATFORM = 'Linux'
+print(os.path.dirname(sys.executable))
 
 if PLATFORM == 'Windows':
     import subprocess
